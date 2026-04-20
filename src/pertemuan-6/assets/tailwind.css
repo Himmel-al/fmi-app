@@ -29,3 +29,7 @@
     --color-biru: #3b82f6;
     --color-kuning: #f59e0b;
 }
+
+body {
+    @apply font-barlow;
+}
