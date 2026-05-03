@@ -1,63 +1,48 @@
-import { FaBell, FaSearch } from "react-icons/fa";
-import { FcAreaChart } from "react-icons/fc";
-import { SlSettings } from "react-icons/sl";
+import { MdAdd, MdSearch } from "react-icons/md";
+import { FaBell, FaShoppingCart } from "react-icons/fa";
 
 export default function Header() {
-    return (
-        <div id="header-container" className="flex items-center justify-between bg-white px-6 py-4">
-            
-            {/* Search Bar */}
-            <div id="search-bar" className="relative w-full max-w-md">
-                <input
-                    id="search-input"
-                    type="text"
-                    placeholder="Search Here..."
-                    className="w-full rounded-2xl bg-gray-50 px-5 py-3 text-sm text-gray-700 outline-none transition-all focus:ring-2 focus:ring-green-100"
-                />
-                <FaSearch id="search-icon" className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400" />
-            </div>
+  return (
+    <header className="flex items-center gap-4 px-6 py-3.5 border-b border-white/[0.06] bg-[#0a0d14]/80 backdrop-blur-sm sticky top-0 z-50">
 
-            {/* Icon & Profile Section */}
-            <div id="icons-container" className="flex items-center gap-6">
-                
-                {/* Group Ikon */}
-                <div className="flex items-center gap-4">
-                    {/* Notification Icon */}
-                    <div id="notification-icon" className="relative flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl bg-blue-50 text-xl text-blue-500 transition-colors hover:bg-blue-100">
-                        <FaBell />
-                        <span id="notification-badge" className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-blue-500 text-[10px] font-bold text-white">
-                            50
-                        </span>
-                    </div>
-                    
-                    {/* Chart Icon */}
-                    <div id="chart-icon" className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl bg-blue-50 text-2xl transition-colors hover:bg-blue-100">
-                        <FcAreaChart />
-                    </div>
-                    
-                    {/* Settings Icon */}
-                    <div id="settings-icon" className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl bg-red-50 text-xl text-red-500 transition-colors hover:bg-red-100">
-                        <SlSettings />
-                    </div>
-                </div>
+      {/* Left: Page Info */}
+      <div className="flex-1">
+        <h1 className="text-[17px] font-black text-slate-100 tracking-tight">Dashboard</h1>
+        <p className="text-[11px] text-slate-600">
+          Utama / <span className="text-amber-500">Ringkasan Operasional</span> — April 2026
+        </p>
+      </div>
 
-                {/* Garis Pemisah (Divider) */}
-                <div className="h-10 w-px bg-gray-200"></div>
+      {/* Search */}
+      <div className="flex items-center gap-2 bg-white/[0.04] border border-white/[0.08] rounded-xl px-3.5 py-2 w-52">
+        <MdSearch className="text-slate-600 text-base shrink-0" />
+        <input
+          type="text"
+          placeholder="Cari produk, pesanan..."
+          className="bg-transparent outline-none text-[12px] text-slate-400 placeholder-slate-700 w-full"
+        />
+      </div>
 
-                {/* Profile Section */}
-                <div id="profile-container" className="flex items-center gap-3">
-                    <span id="profile-text" className="text-sm text-gray-500">
-                        Hello, <b className="text-gray-800">Hafiz</b>
-                    </span>
-                    <img
-                        id="profile-avatar"
-                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAMFBMVEXQ0NCxsbG0tLTPz8/MzMy8vLy5ubmysrLGxsbJycnCwsK4uLjExMS/v7/T09Ourq7IXhHVAAAFBElEQVR4nO2d27KbMAxFuZirQf7/v20ISSAJJAY28fap1kwf2ul0WLWxLNnoJImiKIqiKIqiKIqiKIqiKIqiKIqiKIqiKIqiKMoZiIy//iQiputLm2WZLdom+WuaktRF6tIHLi2bv+Qo5knvJpnVf8VRGvumNzpaE/rZEIhZ8bs6tvEPY16s+w2KZegHPIjUn/SuZKGf8RD5hwk6KeahH3M3HgMY9yjK5zdwhg39qPvwmqE3yjzCLY6pvP0uuCor6qgspfYfwIelK+vQz+2NtNsFr5KxbOT815h3xyg2cgcEB8eOfhiPCV4UC3JFKY8J0iseHUF6RYQgdVIlPULwotiENllhbxx8pwqtssKOncwafWiXRRqcYJoyZo050I9zEDOoIeGbeDjSP+P4Eo26gBqmRWihdyTpoYqhfZYQA3wXHWceJSVOke9FHLEwQ8Z4MYCLioRLzRWBLTcla4JhUHHRshoKaj3lNUQtp7SzFBb3WVeaJGlBhm1okVU6jCBtJQNnyJgDj4BmaUa70KBWGtZNW4IyJE0trmAyYdp4n4AMCYsYExBD6gsaCEPqIYSsNLx70gFExOeN9gPHE0TiDdsVOVqqIT4+HMh7ezQF5hZEnF7Ygng/AzphYw4WqNSJdxRRx8C8mQXqHJh3440qefMaoqqlvIb/QYaPKepT79sg05TwnsIEpNTGWw1OQKspdfYkgByf+fplghhE4j3byOEbisTBcOTwTW/mUDEidfb+VayvnqO9ZvKE5M0+wd6wv4MT+wy70I/tz74tOHNy/8ausEgfJ+bsyvap96Ov7Ar8vPcvFthzryaCSDhnR8mG+Ox+ie3V/ciGcMebSJ5SLLBxOaU+911m44deMcXCO1uyjOhewhF/xUgFN9Q0YhX0jvt9dMvoHd8CcWSxfoZv9TSqpGKO/76Gugb8Ce8sMaqsYuDxWnmm+rHNUjH2UY7wUnT3+kxPfKw2p58vjh7NhtzjHlvqMv52g1IP/YWmi03fd6eTYH/9naF2nHoImumPPrdUco+Zecu3XJHTOoqZPniuZkdkH86+XfVoLDRtgFgd537pc76X98t1fjcLhM9NJwq+ufril76mtHX5Kumcnde4XxJmZ7nWHGkWPsh/7hgoSdOW2SDmhr9qi3o+FeX9pMNlHc1klXolJrwOg0iSm6Yx5rUJ3VoDNIpetZK31VpAcL4RfDWkuKoP/EZepufKs91mqkcPti8f8g+vazjJLvsaz7MvB0pivtY6XFoEKQLIWgx4c2zXV4yhjbIPX/+j8CyunqvPV3YLb5OIab/OgenfqH6aRH7sgLwyCEXX5IPWwGUT0LSFv97N8Wcd+bb73R7RpZm1trQ2S92ef+FnqQesqdcOx19kkGbj5AIrnt+V17MD8nlU517s29NfNi5FAsFzD+JMaLmREw9TsV3ZdnPa1SJcf52jnHXzBtZe5zDunB0cspXXYU4x5BnCWZkcCeKSOo5TjhxDSz1xxmFORzRJ0zO+jTr8kTYY/JV+bJPZ4+C7EFHsSGfgr+DQ7GfuoF9EttfwhP4gZJMUHxGh7boxgJcaUDMBIOiYT7VluwJeTPkWGvg3RJt+gtNvwOaIbDuaAWxAJFxKwZfh2PZsA9iQj2q8igSbXdDtSlOwIVUR6g7WkDAcgov7JMXuJ7CGw0/UpgNqqCiKoiiKoiiKoiiKoiiKoiiKoiiKoiiKoiiKEgX/AEs0SMeP3JJ6AAAAAElFTkSuQmCC"
-                        alt="Profile Avatar"
-                        className="h-12 w-12 rounded-full object-cover shadow-sm"
-                    />
-                </div>
-                
-            </div>
+      {/* Actions */}
+      <div className="flex items-center gap-2">
+        {/* Cart */}
+        <div className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06] text-slate-500 hover:bg-white/[0.08] hover:text-slate-300 transition-all cursor-pointer">
+          <FaShoppingCart className="text-sm" />
+          <span className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center rounded-full bg-amber-500 text-[8px] font-bold text-[#0a0d14] border-2 border-[#0f1117]">3</span>
         </div>
-    );
+
+        {/* Bell */}
+        <div className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06] text-slate-500 hover:bg-white/[0.08] hover:text-slate-300 transition-all cursor-pointer">
+          <FaBell className="text-sm" />
+          <span className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white border-2 border-[#0f1117]">12</span>
+        </div>
+
+        {/* Add Button */}
+        <button className="flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d14] text-[12px] font-black px-4 py-2 rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-amber-500/25 active:scale-95">
+          <MdAdd className="text-base" />
+          Tambah Pesanan
+        </button>
+      </div>
+    </header>
+  );
 }
