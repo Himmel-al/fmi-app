@@ -8,8 +8,9 @@ import "./assets/tailwind.css";
 import Sidebar from "./layouts/Sidebar";
 import Header from "./layouts/Header";
 import Dashboard from "./pages/Dashboard";
-import Orders from "./pages/Orders"
-import Customers from "./pages/Customers"
+import KatalogProduk from "./pages/KatalogProduk"
+import PesananMasuk from "./pages/PesananMasuk"
+import StockGudang from "./pages/StockGudang"
 import { Route, Routes } from "react-router-dom";
 
 function App() {
@@ -21,8 +22,14 @@ function App() {
           <Header />
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/customers" element={<Customers />} />
+            <Route path="/katalogproduk" element={<KatalogProduk />} />
+            <Route path="/pesananmasuk" element={<PesananMasuk />} />
+            <Route path="/stockgudang" element={<StockGudang />} />
+            
+
+
+            {/* <Route path="/orders" element={<Orders />} /> */}
+            {/* <Route path="/customers" element={<Customers />} /> */}
           </Routes>
         </div>
       </div>

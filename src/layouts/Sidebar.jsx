@@ -26,7 +26,7 @@ export default function Sidebar() {
           id="logo-title"
           className="font-poppins text-[42px] font-extrabold text-gray-900 leading-none"
         >
-          Sedap
+          SIPP
           <b id="logo-dot" className="text-hijau">
             .
           </b>
@@ -49,15 +49,21 @@ export default function Sidebar() {
             </NavLink>
           </li>
           <li>
-            <NavLink id="menu-2" to="/orders" className={menuClass}>
+            <NavLink id="menu-2" to="/katalogproduk" className={menuClass}>
               <MdOutlineListAlt className="text-2xl" />
-              <span>Orders</span>
+              <span>Katalog Produk</span>
             </NavLink>
           </li>
           <li>
-            <NavLink id="menu-3" to="/customers" className={menuClass}>
+            <NavLink id="menu-3" to="/PesananMasuk" className={menuClass}>
               <MdHeadsetMic className="text-2xl" />
-              <span>Customers</span>
+              <span>Pesanan Masuk</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink id="menu-4" to="/StockGudang" className={menuClass}>
+              <MdHeadsetMic className="text-2xl" />
+              <span>Stock Gudang</span>
             </NavLink>
           </li>
         </ul>

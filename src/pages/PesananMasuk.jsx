@@ -1,10 +1,10 @@
 import PageHeader from "../components/PageHeader";
 
-export default function Orders() {
+export default function PesananMasuk() {
     return(
         <div>
             <PageHeader/>
-            <h1> ini halaman Orders</h1>
+            <h1> ini halaman Katalog Pesanan Masuk</h1>
         </div>
     )
 }
