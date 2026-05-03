@@ -24,10 +24,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/katalogproduk" element={<KatalogProduk />} />
             <Route path="/pesananmasuk" element={<PesananMasuk />} />
-            <Route path="/stockgudang" element={<StockGudang />} />
-            
-
-
+            <Route path="/stockgudang" element={<StockGudang />} />            
             {/* <Route path="/orders" element={<Orders />} /> */}
             {/* <Route path="/customers" element={<Customers />} /> */}
           </Routes>
