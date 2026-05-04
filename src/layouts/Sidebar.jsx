@@ -12,9 +12,8 @@ import { NavLink } from "react-router-dom";
 const navItems = [
   { id: "dashboard", path: "/", icon: MdDashboard, label: "Dashboard" },
   { id: "katalog", path: "/katalogproduk", icon: MdOutlineChair, label: "Katalog Produk" },
-  { id: "pesanan", path: "/PesananMasuk", icon: MdShoppingCart, label: "Pesanan Masuk", badge: "12", badgeColor: "red" },
-  { id: "stok", path: "/StockGudang", icon: MdOutlineInventory2, label: "Stok Gudang", badge: "3", badgeColor: "amber" },
-  { id: "pelanggan", path: "/DataPelanggan", icon: MdPeopleOutline, label: "Data Pelanggan" },
+  { id: "pesanan", path: "/PesananMasuk", icon: MdShoppingCart, label: "Pesanan Masuk" },
+  { id: "stok", path: "/StockGudang", icon: MdOutlineInventory2, label: "Stok Gudang" },
 ];
 
 const reportItems = [

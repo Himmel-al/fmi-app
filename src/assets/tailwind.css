@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 @font-face {
     font-family: 'Barlow';
     src: url('/public/fonts/Barlow-Regular.ttf');

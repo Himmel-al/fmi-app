@@ -1,33 +1,50 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "./assets/vite.svg";
-import heroImg from "./assets/hero.png";
 import "./App.css";
 import "./assets/tailwind.css";
 
 import Sidebar from "./layouts/Sidebar";
 import Header from "./layouts/Header";
 import Dashboard from "./pages/Dashboard";
-import KatalogProduk from "./pages/KatalogProduk"
-import PesananMasuk from "./pages/PesananMasuk"
-import StockGudang from "./pages/StockGudang"
+import KatalogProduk from "./pages/KatalogProduk";
+import PesananMasuk from "./pages/PesananMasuk";
+import StockGudang from "./pages/StockGudang";
 import { Route, Routes } from "react-router-dom";
+import Analitik from "./pages/Analitik";
+import Pengaturan from "./pages/Pengaturan";
 
 function App() {
   return (
-    <div id="app-container" className="bg-gray-100 min-h-screen flex">
-      <div id="layout-wrapper" className="flex flex-row flex-1">
+    <div
+      id="app-container"
+      style={{ background: "#0d0f14", minHeight: "100vh", display: "flex" }}
+    >
+      <div
+        id="layout-wrapper"
+        style={{ display: "flex", flexDirection: "row", flex: 1 }}
+      >
         <Sidebar />
-        <div id="main-content" className="flex-1 p-4">
+
+        <div
+          id="main-content"
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            background: "#0d0f14",
+            overflow: "hidden",
+          }}
+        >
           <Header />
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/katalogproduk" element={<KatalogProduk />} />
-            <Route path="/pesananmasuk" element={<PesananMasuk />} />
-            <Route path="/stockgudang" element={<StockGudang />} />            
-            {/* <Route path="/orders" element={<Orders />} /> */}
-            {/* <Route path="/customers" element={<Customers />} /> */}
-          </Routes>
+
+          <div style={{ flex: 1, overflowY: "auto", background: "#0d0f14" }}>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/katalogproduk" element={<KatalogProduk />} />
+              <Route path="/pesananmasuk" element={<PesananMasuk />} />
+              <Route path="/stockgudang" element={<StockGudang />} />             
+              <Route path="/analitik" element={<Analitik />} />
+              <Route path="/pengaturan" element={<Pengaturan />} />
+            </Routes>
+          </div>
         </div>
       </div>
     </div>
