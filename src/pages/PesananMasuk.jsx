@@ -63,7 +63,7 @@ export default function PesananMasuk() {
       <PageHeader
         title="Pesanan Masuk"
         breadcrumb={[{ label: "Dashboard" }, { label: "Pesanan Masuk" }]}
-        buttonLabel="Add Pesanan"
+        buttonLabel="+ Tambah Pesanan"
         buttonStyle="orange"
       />
 

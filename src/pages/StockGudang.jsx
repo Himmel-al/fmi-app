@@ -59,7 +59,7 @@ export default function StockGudang() {
       <PageHeader
         title="Stock Gudang"
         breadcrumb={[{ label: "Dashboard" }, { label: "Stock Gudang" }]}
-        buttonLabel="Add Stok"
+        buttonLabel="+ Tambah Stock"
         buttonStyle="orange"
       />
 
