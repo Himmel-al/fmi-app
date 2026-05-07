@@ -1,53 +1,44 @@
 import "./App.css";
 import "./assets/tailwind.css";
+import { Route, Routes } from "react-router-dom";
 
-import Sidebar from "./layouts/Sidebar";
-import Header from "./layouts/Header";
+import AuthLayout from "./layouts/AuthLayout";
+import AppLayout from "./layouts/AppLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import Forgot from "./pages/auth/Forgot";
+
 import Dashboard from "./pages/Dashboard";
 import KatalogProduk from "./pages/KatalogProduk";
 import PesananMasuk from "./pages/PesananMasuk";
 import StockGudang from "./pages/StockGudang";
-import { Route, Routes } from "react-router-dom";
 import Analitik from "./pages/Analitik";
 import Pengaturan from "./pages/Pengaturan";
 
 function App() {
   return (
-    <div
-      id="app-container"
-      style={{ background: "#0d0f14", minHeight: "100vh", display: "flex" }}
-    >
-      <div
-        id="layout-wrapper"
-        style={{ display: "flex", flexDirection: "row", flex: 1 }}
-      >
-        <Sidebar />
+    <Routes>
+      {/* Auth Routes */}
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<Forgot />} />
+      </Route>
 
-        <div
-          id="main-content"
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            background: "#0d0f14",
-            overflow: "hidden",
-          }}
-        >
-          <Header />
-
-          <div style={{ flex: 1, overflowY: "auto", background: "#0d0f14" }}>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/katalogproduk" element={<KatalogProduk />} />
-              <Route path="/pesananmasuk" element={<PesananMasuk />} />
-              <Route path="/stockgudang" element={<StockGudang />} />             
-              <Route path="/analitik" element={<Analitik />} />
-              <Route path="/pengaturan" element={<Pengaturan />} />
-            </Routes>
-          </div>
-        </div>
-      </div>
-    </div>
+      {/* Protected Routes */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/katalogproduk" element={<KatalogProduk />} />
+          <Route path="/pesananmasuk" element={<PesananMasuk />} />
+          <Route path="/stockgudang" element={<StockGudang />} />
+          <Route path="/analitik" element={<Analitik />} />
+          <Route path="/pengaturan" element={<Pengaturan />} />
+        </Route>
+      </Route>
+    </Routes>
   );
 }
 
