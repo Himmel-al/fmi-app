@@ -1,13 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { loginUser } from "../../api/authService";
 
 export default function Login() {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    localStorage.setItem("isLoggedIn", "true");
-    navigate("/");
+    setLoading(true);
+    setError("");
+
+    try {
+      if (email === "admin@sippfurniture.com" && password === "admin123") {
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("token", "fake-token-123");
+        navigate("/");
+      } else {
+        setError("Email atau kata sandi salah.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -34,6 +51,13 @@ export default function Login() {
         </p>
       </div>
 
+      {/* Tampilkan error jika ada */}
+      {error && (
+        <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-lg px-4 py-3 mb-4">
+          {error}
+        </div>
+      )}
+
       <form onSubmit={handleLogin} className="space-y-5">
         <div>
           <label className="block text-sm font-medium text-gray-400 mb-2">
@@ -42,6 +66,8 @@ export default function Login() {
           <input
             type="email"
             placeholder="admin@sippfurniture.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full bg-[#0f1015] border border-gray-700 rounded-lg p-3 text-gray-200 focus:outline-none focus:border-orange-500 transition-colors"
             required
           />
@@ -62,6 +88,8 @@ export default function Login() {
           <input
             type="password"
             placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full bg-[#0f1015] border border-gray-700 rounded-lg p-3 text-gray-200 focus:outline-none focus:border-orange-500 transition-colors"
             required
           />
@@ -69,9 +97,10 @@ export default function Login() {
 
         <button
           type="submit"
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 rounded-lg transition-colors shadow-lg shadow-orange-500/20 mt-2"
+          disabled={loading}
+          className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 rounded-lg transition-colors shadow-lg shadow-orange-500/20 mt-2"
         >
-          Masuk
+          {loading ? "Memuat..." : "Masuk"}
         </button>
       </form>
 
