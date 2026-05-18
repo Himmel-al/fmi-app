@@ -19,7 +19,7 @@ export default function Login() {
       if (email === "admin@sippfurniture.com" && password === "admin123") {
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("token", "fake-token-123");
-        navigate("/");
+        navigate("/dashboard");
       } else {
         setError("Email atau kata sandi salah.");
       }
