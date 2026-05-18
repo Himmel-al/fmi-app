@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 // Inject global styles
 const GlobalStyles = () => (
   <style>{`
@@ -752,7 +752,7 @@ const LandingPage = () => {
   }, []);
 
   // Simulate navigate for standalone use
-  const navigate = (path) => (window.location.hash = path);
+  const navigate = useNavigate();
 
   return (
     <div>
@@ -760,10 +760,8 @@ const LandingPage = () => {
       <CustomCursor />
 
       {/* NAV */}
-      <nav className={`nav ${scrolled ? "scrolled" : ""}`}>
-        <a className="nav-logo" href="#">
-          🛋️ BM<span>Perabot</span>
-        </a>
+      <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
+        <a className="nav-logo" href="#">🛋️ SIPP</a>
         <div className="nav-links">
           <button className="btn-ghost" onClick={() => navigate("/login")}>
             Masuk

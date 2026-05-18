@@ -10,7 +10,7 @@ import {
 import { NavLink } from "react-router-dom";
 
 const navItems = [
-  { id: "dashboard", path: "/", icon: MdDashboard, label: "Dashboard" },
+  { id: "dashboard", path: "/dashboard", icon: MdDashboard, label: "Dashboard" },
   { id: "katalog", path: "/katalogproduk", icon: MdOutlineChair, label: "Katalog Produk" },
   { id: "pesanan", path: "/PesananMasuk", icon: MdShoppingCart, label: "Pesanan Masuk" },
   { id: "stok", path: "/StockGudang", icon: MdOutlineInventory2, label: "Stok Gudang" },

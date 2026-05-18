@@ -7,7 +7,7 @@ export default function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
-    navigate("/login");
+    navigate("/");
   };
 
   return (
