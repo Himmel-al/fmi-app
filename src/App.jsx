@@ -8,7 +8,8 @@ import AppLayout from "./layouts/AppLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import GuestLayout from "./layouts/GuestLayout";
 
-
+// Menambahkan lazy import untuk LandingPage
+const LandingPage = lazy(() => import("./pages/LandingPage"));
 
 // Ganti import biasa → lazy
 const Login = lazy(() => import("./pages/auth/Login"));
@@ -57,6 +58,8 @@ function App() {
       {" "}
       <Routes>
         <Route element={<GuestLayout />}>
+          {/* Ketika akses http://localhost:5173/ maka LandingPage yang akan muncul */}
+          <Route path="/" element={<LandingPage />} />
           <Route path="/guest" element={<GuestPage />} />
         </Route>
 
@@ -68,7 +71,8 @@ function App() {
 
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
-            <Route path="/" element={<Dashboard />} />
+            {/* Mengubah path Dashboard menjadi /dashboard agar tidak bentrok dengan LandingPage */}
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/katalogproduk" element={<KatalogProduk />} />
             <Route path="/pesananmasuk" element={<PesananMasuk />} />
             <Route path="/stockgudang" element={<StockGudang />} />
