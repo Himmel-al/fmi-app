@@ -719,7 +719,7 @@ const LandingPage = () => {
 
       {/* NAV */}
       <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
-        <a className="nav-logo" href="#">🛋️ BM<span>Perabot</span></a>
+        <a className="nav-logo" href="#">🛋️ SIPP</a>
         <div className="nav-links">
           <button className="btn-ghost" onClick={() => navigate('/login')}>Masuk</button>
           <button className="btn-primary" onClick={() => navigate('/register')}>Daftar Sekarang</button>
