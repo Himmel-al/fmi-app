@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 
 // Inject global styles
 const GlobalStyles = () => (
@@ -666,37 +666,79 @@ const CustomCursor = () => {
   const dot = useRef(null);
   const ring = useRef(null);
   useEffect(() => {
-    let x = 0, y = 0, rx = 0, ry = 0;
-    const move = (e) => { x = e.clientX; y = e.clientY; };
+    let x = 0,
+      y = 0,
+      rx = 0,
+      ry = 0;
+    const move = (e) => {
+      x = e.clientX;
+      y = e.clientY;
+    };
     const raf = () => {
-      rx += (x - rx) * 0.15; ry += (y - ry) * 0.15;
-      if (dot.current) { dot.current.style.left = x + 'px'; dot.current.style.top = y + 'px'; }
-      if (ring.current) { ring.current.style.left = rx + 'px'; ring.current.style.top = ry + 'px'; }
+      rx += (x - rx) * 0.15;
+      ry += (y - ry) * 0.15;
+      if (dot.current) {
+        dot.current.style.left = x + "px";
+        dot.current.style.top = y + "px";
+      }
+      if (ring.current) {
+        ring.current.style.left = rx + "px";
+        ring.current.style.top = ry + "px";
+      }
       requestAnimationFrame(raf);
     };
-    window.addEventListener('mousemove', move);
+    window.addEventListener("mousemove", move);
     raf();
-    return () => window.removeEventListener('mousemove', move);
+    return () => window.removeEventListener("mousemove", move);
   }, []);
-  return (<><div ref={dot} className="cursor-dot" /><div ref={ring} className="cursor-ring" /></>);
+  return (
+    <>
+      <div ref={dot} className="cursor-dot" />
+      <div ref={ring} className="cursor-ring" />
+    </>
+  );
 };
 
 // ANIM ON SCROLL
 const useScrollAnim = () => {
   useEffect(() => {
-    const els = document.querySelectorAll('.anim-up');
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.1 });
-    els.forEach(el => obs.observe(el));
+    const els = document.querySelectorAll(".anim-up");
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) e.target.classList.add("visible");
+        });
+      },
+      { threshold: 0.1 },
+    );
+    els.forEach((el) => obs.observe(el));
     return () => obs.disconnect();
   }, []);
 };
 
 const products = [
-  { emoji: '🛋️', cat: 'Ruang Tamu', name: 'Sofa Premium Minimalis L-Shape', price: 'Rp 8.400.000', badge: 'Terlaris', old: 'Rp 10.000.000' },
-  { emoji: '🛏️', cat: 'Kamar Tidur', name: 'Ranjang Kayu Jati King Size', price: 'Rp 12.750.000', badge: null },
-  { emoji: '🪑', cat: 'Ruang Makan', name: 'Kursi Makan Set Scandinavian', price: 'Rp 4.200.000', badge: 'Baru' },
+  {
+    emoji: "🛋️",
+    cat: "Ruang Tamu",
+    name: "Sofa Premium Minimalis L-Shape",
+    price: "Rp 8.400.000",
+    badge: "Terlaris",
+    old: "Rp 10.000.000",
+  },
+  {
+    emoji: "🛏️",
+    cat: "Kamar Tidur",
+    name: "Ranjang Kayu Jati King Size",
+    price: "Rp 12.750.000",
+    badge: null,
+  },
+  {
+    emoji: "🪑",
+    cat: "Ruang Makan",
+    name: "Kursi Makan Set Scandinavian",
+    price: "Rp 4.200.000",
+    badge: "Baru",
+  },
 ];
 
 const LandingPage = () => {
@@ -705,12 +747,12 @@ const LandingPage = () => {
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   // Simulate navigate for standalone use
-  const navigate = (path) => window.location.hash = path;
+  const navigate = (path) => (window.location.hash = path);
 
   return (
     <div>
@@ -718,11 +760,17 @@ const LandingPage = () => {
       <CustomCursor />
 
       {/* NAV */}
-      <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
-        <a className="nav-logo" href="#">🛋️ BM<span>Perabot</span></a>
+      <nav className={`nav ${scrolled ? "scrolled" : ""}`}>
+        <a className="nav-logo" href="#">
+          🛋️ BM<span>Perabot</span>
+        </a>
         <div className="nav-links">
-          <button className="btn-ghost" onClick={() => navigate('/login')}>Masuk</button>
-          <button className="btn-primary" onClick={() => navigate('/register')}>Daftar Sekarang</button>
+          <button className="btn-ghost" onClick={() => navigate("/login")}>
+            Masuk
+          </button>
+          <button className="btn-primary" onClick={() => navigate("/register")}>
+            Daftar Sekarang
+          </button>
         </div>
       </nav>
 
@@ -731,25 +779,36 @@ const LandingPage = () => {
         <div className="hero-bg-mesh" />
         <div className="hero-grid" />
         <div className="hero-lines">
-          <div className="hero-line" /><div className="hero-line" /><div className="hero-line" />
+          <div className="hero-line" />
+          <div className="hero-line" />
+          <div className="hero-line" />
         </div>
 
         <div className="hero-inner">
           <div>
-            <div className="hero-badge"><div className="badge-dot" /> Smart Framework Project</div>
+            <div className="hero-badge">
+              <div className="badge-dot" /> Smart Framework Project
+            </div>
             <h1 className="hero-title">
-              Sistem Informasi<br />
-              Pemesanan <em>Perabot</em><br />
+              Sistem Informasi
+              <br />
+              Pemesanan <em>Perabot</em>
+              <br />
               Berbasis Web
             </h1>
             <p className="hero-desc">
-              Platform digital terintegrasi untuk pengalaman pemesanan furnitur premium yang efisien, transparan, dan modern — untuk hunian dan perkantoran Anda.
+              Platform digital terintegrasi untuk pengalaman pemesanan furnitur
+              premium yang efisien, transparan, dan modern — untuk hunian dan
+              perkantoran Anda.
             </p>
             <div className="hero-cta-group">
-              <button className="cta-main" onClick={() => navigate('/login')}>
+              <button className="cta-main" onClick={() => navigate("/login")}>
                 Mulai Pemesanan →
               </button>
-              <button className="cta-secondary" onClick={() => navigate('/register')}>
+              <button
+                className="cta-secondary"
+                onClick={() => navigate("/register")}
+              >
                 <span>Daftar Gratis</span>
               </button>
             </div>
@@ -788,7 +847,16 @@ const LandingPage = () => {
         <div className="marquee-track">
           {[...Array(2)].map((_, i) => (
             <React.Fragment key={i}>
-              {['Kayu Pilihan Resmi','Pengiriman Profesional','Katalog Interaktif','Invoice Otomatis','Stok Real-time','Garansi Produk','Pembayaran Aman','Support 24 Jam'].map((t, j) => (
+              {[
+                "Kayu Pilihan Resmi",
+                "Pengiriman Profesional",
+                "Katalog Interaktif",
+                "Invoice Otomatis",
+                "Stok Real-time",
+                "Garansi Produk",
+                "Pembayaran Aman",
+                "Support 24 Jam",
+              ].map((t, j) => (
                 <span key={j} className="marquee-item">
                   <span>✦</span> {t} <span className="marquee-sep">·</span>
                 </span>
@@ -801,12 +869,16 @@ const LandingPage = () => {
       {/* STATS */}
       <div className="stats-bar">
         {[
-          { num: '100%', lbl: 'Kayu Pilihan Berkualitas' },
-          { num: '500+', lbl: 'Produk Dalam Katalog' },
-          { num: '<3 Menit', lbl: 'Proses Pemesanan' },
-          { num: '24 Jam', lbl: 'Akses Sistem Web' },
+          { num: "100%", lbl: "Kayu Pilihan Berkualitas" },
+          { num: "500+", lbl: "Produk Dalam Katalog" },
+          { num: "<3 Menit", lbl: "Proses Pemesanan" },
+          { num: "24 Jam", lbl: "Akses Sistem Web" },
         ].map((s, i) => (
-          <div key={i} className="stats-item anim-up" style={{ transitionDelay: `${i * 0.1}s` }}>
+          <div
+            key={i}
+            className="stats-item anim-up"
+            style={{ transitionDelay: `${i * 0.1}s` }}
+          >
             <div className="stats-num">{s.num}</div>
             <div className="stats-lbl">{s.lbl}</div>
           </div>
@@ -819,21 +891,69 @@ const LandingPage = () => {
           <div className="features-left anim-up">
             <div className="section-tag">Keunggulan Sistem</div>
             <h2 className="section-title">Dirancang untuk Efisiensi Penuh</h2>
-            <p className="section-sub">Setiap fitur dibangun dengan presisi untuk memangkas proses pengadaan furnitur dari manual menjadi digital end-to-end.</p>
-            <div style={{ marginTop: '40px', padding: '28px', background: 'var(--dark)', borderRadius: '18px', border: '1px solid rgba(201,168,76,0.1)' }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', fontWeight: 900, color: 'var(--gold)', marginBottom: '8px' }}>BM Perabot</div>
-              <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)', lineHeight: 1.6 }}>Sistem Informasi Pemesanan · Pekanbaru, Riau · © 2025</div>
+            <p className="section-sub">
+              Setiap fitur dibangun dengan presisi untuk memangkas proses
+              pengadaan furnitur dari manual menjadi digital end-to-end.
+            </p>
+            <div
+              style={{
+                marginTop: "40px",
+                padding: "28px",
+                background: "var(--dark)",
+                borderRadius: "18px",
+                border: "1px solid rgba(201,168,76,0.1)",
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "2rem",
+                  fontWeight: 900,
+                  color: "var(--gold)",
+                  marginBottom: "8px",
+                }}
+              >
+                BM Perabot
+              </div>
+              <div
+                style={{
+                  fontSize: "0.85rem",
+                  color: "rgba(255,255,255,0.35)",
+                  lineHeight: 1.6,
+                }}
+              >
+                Sistem Informasi Pemesanan · Pekanbaru, Riau · © 2025
+              </div>
             </div>
           </div>
 
           <div className="features-right">
             {[
-              { icon: '📋', title: 'Katalog Produk Interaktif', text: 'Jelajahi koleksi furnitur lengkap dengan detail dimensi, spesifikasi bahan, dan variasi warna secara real-time dari browser Anda.' },
-              { icon: '⚡', title: 'Alur Pemesanan Super Cepat', text: 'Dari pilih produk hingga konfirmasi order — sistem otomasi invoice kami merampingkan transaksi konvensional menjadi di bawah 3 menit.' },
-              { icon: '📦', title: 'Manajemen Transparan', text: 'Setiap pesanan Anda terhubung langsung dengan backend admin gudang — akurasi stok dan presisi jadwal pengiriman terjamin.' },
-              { icon: '🔐', title: 'Keamanan Data Terjaga', text: 'Autentikasi berlapis dan enkripsi data memastikan informasi pribadi serta riwayat transaksi Anda tetap aman sepenuhnya.' },
+              {
+                icon: "📋",
+                title: "Katalog Produk Interaktif",
+                text: "Jelajahi koleksi furnitur lengkap dengan detail dimensi, spesifikasi bahan, dan variasi warna secara real-time dari browser Anda.",
+              },
+              {
+                icon: "⚡",
+                title: "Alur Pemesanan Super Cepat",
+                text: "Dari pilih produk hingga konfirmasi order — sistem otomasi invoice kami merampingkan transaksi konvensional menjadi di bawah 3 menit.",
+              },
+              {
+                icon: "📦",
+                title: "Manajemen Transparan",
+                text: "Setiap pesanan Anda terhubung langsung dengan backend admin gudang — akurasi stok dan presisi jadwal pengiriman terjamin.",
+              },
+              {
+                icon: "🔐",
+                title: "Keamanan Data Terjaga",
+                text: "Autentikasi berlapis dan enkripsi data memastikan informasi pribadi serta riwayat transaksi Anda tetap aman sepenuhnya.",
+              },
             ].map((f, i) => (
-              <div key={i} className={`feature-card anim-up anim-delay-${i % 3 + 1}`}>
+              <div
+                key={i}
+                className={`feature-card anim-up anim-delay-${(i % 3) + 1}`}
+              >
                 <div className="feature-icon-wrap">{f.icon}</div>
                 <div>
                   <div className="feature-title">{f.title}</div>
@@ -852,14 +972,22 @@ const LandingPage = () => {
             <div className="section-tag">Katalog Pilihan</div>
             <h2 className="section-title light">Koleksi Furnitur Premium</h2>
           </div>
-          <button className="btn-ghost anim-up" style={{ color: 'var(--gold)', fontSize: '0.9rem' }} onClick={() => navigate('/login')}>
+          <button
+            className="btn-ghost anim-up"
+            style={{ color: "var(--gold)", fontSize: "0.9rem" }}
+            onClick={() => navigate("/login")}
+          >
             Lihat Semua Produk →
           </button>
         </div>
 
         <div className="products-grid">
           {products.map((p, i) => (
-            <div key={i} className={`product-card anim-up anim-delay-${i + 1}`} onClick={() => navigate('/login')}>
+            <div
+              key={i}
+              className={`product-card anim-up anim-delay-${i + 1}`}
+              onClick={() => navigate("/login")}
+            >
               <div className="product-img">
                 {p.badge && <div className="product-badge">{p.badge}</div>}
                 {p.emoji}
@@ -880,20 +1008,54 @@ const LandingPage = () => {
       {/* PROCESS */}
       <section className="process-section">
         <div className="process-wrap">
-          <div className="anim-up" style={{ textAlign: 'center', marginBottom: '16px' }}>
+          <div
+            className="anim-up"
+            style={{ textAlign: "center", marginBottom: "16px" }}
+          >
             <div className="section-tag">Alur Sistem</div>
           </div>
-          <h2 className="section-title anim-up" style={{ textAlign: 'center' }}>Cara Kerja Pemesanan</h2>
-          <p className="section-sub anim-up" style={{ textAlign: 'center', margin: '0 auto' }}>Empat langkah sederhana dari registrasi hingga produk tiba di tangan Anda.</p>
+          <h2 className="section-title anim-up" style={{ textAlign: "center" }}>
+            Cara Kerja Pemesanan
+          </h2>
+          <p
+            className="section-sub anim-up"
+            style={{ textAlign: "center", margin: "0 auto" }}
+          >
+            Empat langkah sederhana dari registrasi hingga produk tiba di tangan
+            Anda.
+          </p>
 
           <div className="process-steps">
             {[
-              { num: '01', icon: '👤', title: 'Daftar & Masuk Akun', text: 'Buat akun pelanggan dalam hitungan detik dengan form sederhana, lalu masuk ke portal sistem pemesanan eksklusif BM Perabot.' },
-              { num: '02', icon: '🛍️', title: 'Jelajahi & Pilih Produk', text: 'Telusuri katalog interaktif, bandingkan spesifikasi, dan tambahkan furnitur impian Anda ke dalam keranjang pemesanan.' },
-              { num: '03', icon: '📝', title: 'Konfirmasi & Invoice', text: 'Review pesanan, isi detail pengiriman, dan terima invoice otomatis yang langsung dikirim ke dashboard akun Anda.' },
-              { num: '04', icon: '🚚', title: 'Proses & Pengiriman', text: 'Admin memverifikasi pesanan, menyiapkan unit, dan menjadwalkan pengiriman — Anda dapat memantau status secara real-time.' },
+              {
+                num: "01",
+                icon: "👤",
+                title: "Daftar & Masuk Akun",
+                text: "Buat akun pelanggan dalam hitungan detik dengan form sederhana, lalu masuk ke portal sistem pemesanan eksklusif BM Perabot.",
+              },
+              {
+                num: "02",
+                icon: "🛍️",
+                title: "Jelajahi & Pilih Produk",
+                text: "Telusuri katalog interaktif, bandingkan spesifikasi, dan tambahkan furnitur impian Anda ke dalam keranjang pemesanan.",
+              },
+              {
+                num: "03",
+                icon: "📝",
+                title: "Konfirmasi & Invoice",
+                text: "Review pesanan, isi detail pengiriman, dan terima invoice otomatis yang langsung dikirim ke dashboard akun Anda.",
+              },
+              {
+                num: "04",
+                icon: "🚚",
+                title: "Proses & Pengiriman",
+                text: "Admin memverifikasi pesanan, menyiapkan unit, dan menjadwalkan pengiriman — Anda dapat memantau status secara real-time.",
+              },
             ].map((s, i) => (
-              <div key={i} className={`process-step anim-up anim-delay-${(i % 3) + 1}`}>
+              <div
+                key={i}
+                className={`process-step anim-up anim-delay-${(i % 3) + 1}`}
+              >
                 <div className="step-num-wrap">
                   <div className="step-num">{s.num}</div>
                   <div className="step-icon">{s.icon}</div>
@@ -913,14 +1075,18 @@ const LandingPage = () => {
         <div className="testi-wrap anim-up">
           <span className="testi-quote-mark">"</span>
           <p className="testi-text">
-            Integrasi web BM Perabot memudahkan instansi kami dalam memesan set meja rapat dan sofa fungsional secara kolektif, tanpa prosedur manual yang rumit sama sekali.
+            Integrasi web BM Perabot memudahkan instansi kami dalam memesan set
+            meja rapat dan sofa fungsional secara kolektif, tanpa prosedur
+            manual yang rumit sama sekali.
           </p>
           <div className="testi-divider" />
           <div className="testi-author">
             <div className="testi-avatar">H</div>
             <div>
               <div className="testi-name">Hendra Wijaya</div>
-              <div className="testi-role">Manajer Operasional · PT. Sukses Mandiri</div>
+              <div className="testi-role">
+                Manajer Operasional · PT. Sukses Mandiri
+              </div>
             </div>
           </div>
         </div>
@@ -930,12 +1096,27 @@ const LandingPage = () => {
       <section className="cta-section">
         <div className="cta-box anim-up">
           <div>
-            <h2 className="cta-box-title">Siap Transformasi Digital Pembelian Furnitur?</h2>
-            <p className="cta-box-sub">Bergabung sekarang dan rasakan kemudahan pemesanan perabot premium langsung dari genggaman Anda.</p>
+            <h2 className="cta-box-title">
+              Siap Transformasi Digital Pembelian Furnitur?
+            </h2>
+            <p className="cta-box-sub">
+              Bergabung sekarang dan rasakan kemudahan pemesanan perabot premium
+              langsung dari genggaman Anda.
+            </p>
           </div>
           <div className="cta-box-btns">
-            <button className="btn-cta-gold" onClick={() => navigate('/register')}>Daftar Gratis</button>
-            <button className="btn-cta-outline" onClick={() => navigate('/login')}>Masuk Portal</button>
+            <button
+              className="btn-cta-gold"
+              onClick={() => navigate("/register")}
+            >
+              Daftar Gratis
+            </button>
+            <button
+              className="btn-cta-outline"
+              onClick={() => navigate("/login")}
+            >
+              Masuk Portal
+            </button>
           </div>
         </div>
       </section>
@@ -944,17 +1125,27 @@ const LandingPage = () => {
       <footer className="footer">
         <div className="footer-top">
           <div>
-            <div className="footer-brand-logo">🛋️ BM<span>Perabot</span></div>
-            <p className="footer-brand-desc">Platform sistem informasi modern untuk efisiensi digitalisasi pemesanan perabot rumah tangga dan perkantoran wilayah Pekanbaru & sekitarnya.</p>
+            <div className="footer-brand-logo">
+              🛋️ BM<span>Perabot</span>
+            </div>
+            <p className="footer-brand-desc">
+              Platform sistem informasi modern untuk efisiensi digitalisasi
+              pemesanan perabot rumah tangga dan perkantoran wilayah Pekanbaru &
+              sekitarnya.
+            </p>
             <div className="footer-social">
-              {['📘','📷','🐦','💼'].map((s,i) => <button key={i} className="social-btn">{s}</button>)}
+              {["📘", "📷", "🐦", "💼"].map((s, i) => (
+                <button key={i} className="social-btn">
+                  {s}
+                </button>
+              ))}
             </div>
           </div>
           <div>
             <div className="footer-col-label">Sistem</div>
             <ul className="footer-links">
-              <li onClick={() => navigate('/login')}>Portal Internal</li>
-              <li onClick={() => navigate('/register')}>Pendaftaran</li>
+              <li onClick={() => navigate("/login")}>Portal Internal</li>
+              <li onClick={() => navigate("/register")}>Pendaftaran</li>
               <li>Dokumentasi</li>
               <li>API Reference</li>
             </ul>
@@ -979,8 +1170,12 @@ const LandingPage = () => {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} Toko BM Perabot. Hak Cipta Dilindungi.</span>
-          <span className="footer-bottom-gold">Proyek Praktikum Pemrograman Framework · Web Developer Specialist</span>
+          <span>
+            © {new Date().getFullYear()} Toko BM Perabot. Hak Cipta Dilindungi.
+          </span>
+          <span className="footer-bottom-gold">
+            Proyek Praktikum Pemrograman Framework · Web Developer Specialist
+          </span>
         </div>
       </footer>
     </div>
