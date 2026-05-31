@@ -20,7 +20,8 @@ const KatalogProduk = lazy(() => import("./pages/KatalogProduk"));
 const PesananMasuk = lazy(() => import("./pages/PesananMasuk"));
 const StockGudang = lazy(() => import("./pages/StockGudang"));
 const Analitik = lazy(() => import("./pages/Analitik"));
-const Pengaturan = lazy(() => import("./pages/Pengaturan"));
+const Pengaturan = lazy(() => import("./pages/Pengaturan"));  
+const ProductDetail = lazy(() => import("./pages/ProductDetail"))
 const GuestPage = lazy(() => import("./pages/guest/GuestPage"));
 
 function LoadingScreen() {
@@ -78,6 +79,7 @@ function App() {
             <Route path="/stockgudang" element={<StockGudang />} />
             <Route path="/analitik" element={<Analitik />} />
             <Route path="/pengaturan" element={<Pengaturan />} />
+            <Route path="/products/:id" element={<ProductDetail />} />
           </Route>
         </Route>
       </Routes>

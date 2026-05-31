@@ -1,10 +1,12 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 
 export default function StockGudang() {
   // Data dummy untuk tabel stok gudang
   const stockItems = [
     {
+      id: 1,
       sku: "SF-001",
       name: "Sofa Premium L-Shape",
       category: "Sofa",
@@ -15,6 +17,7 @@ export default function StockGudang() {
         "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20",
     },
     {
+      id: 2,
       sku: "MJ-002",
       name: "Meja Makan Minimalis",
       category: "Meja",
@@ -25,6 +28,7 @@ export default function StockGudang() {
         "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20",
     },
     {
+      id: 3,
       sku: "LM-003",
       name: "Lemari Pakaian 4 Pintu",
       category: "Lemari",
@@ -35,6 +39,7 @@ export default function StockGudang() {
         "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20",
     },
     {
+      id: 4,
       sku: "TT-005",
       name: "Tempat Tidur Queen",
       category: "Kasur",
@@ -44,6 +49,7 @@ export default function StockGudang() {
       statusColor: "bg-amber-500/10 text-amber-500 border border-amber-500/20",
     },
     {
+      id: 5,
       sku: "KR-008",
       name: "Kursi Makan Kayu Jati",
       category: "Kursi",
@@ -159,8 +165,13 @@ export default function StockGudang() {
                     className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors"
                   >
                     <td className="p-4 text-gray-400 font-mono">{item.sku}</td>
-                    <td className="p-4 text-gray-200 font-medium">
-                      {item.name}
+                    <td className="p-4 font-medium">
+                      <Link
+                        to={`/products/${item.id}`}
+                        className="text-emerald-400 hover:text-emerald-500 hover:underline transition-colors"
+                      >
+                        {item.name}
+                      </Link>
                     </td>
                     <td className="p-4 text-gray-400">{item.category}</td>
                     <td className="p-4 text-gray-400">{item.price}</td>
