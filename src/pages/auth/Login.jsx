@@ -16,7 +16,7 @@ export default function Login() {
     setError("");
 
     try {
-      if (email === "admin@sippfurniture.com" && password === "admin123") {
+      if (email === "admin@sipp.com" && password === "admin123") {
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("token", "fake-token-123");
         navigate("/dashboard");
