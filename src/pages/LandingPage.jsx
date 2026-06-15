@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Sofa from "../assets/sofa.png";
 // Inject global styles
 const GlobalStyles = () => (
   <style>{`
@@ -718,7 +719,7 @@ const useScrollAnim = () => {
 
 const products = [
   {
-    emoji: "🛋️",
+    image: Sofa,
     cat: "Ruang Tamu",
     name: "Sofa Premium Minimalis L-Shape",
     price: "Rp 8.400.000",
@@ -760,8 +761,10 @@ const LandingPage = () => {
       <CustomCursor />
 
       {/* NAV */}
-      <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
-        <a className="nav-logo" href="#">🛋️ SIPP</a>
+      <nav className={`nav ${scrolled ? "scrolled" : ""}`}>
+        <a className="nav-logo" href="#">
+          🛋️ SIPP
+        </a>
         <div className="nav-links">
           <button className="btn-ghost" onClick={() => navigate("/login")}>
             Masuk
@@ -823,7 +826,19 @@ const LandingPage = () => {
 
             <div className="hero-card-main">
               <div className="hero-tag">✦ Premium</div>
-              <div className="hero-card-img">🛋️</div>
+              <div className="hero-card-img">
+                <img
+                  src={Sofa}
+                  alt="Sofa Minimalis Executive"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    position: "relative",
+                    zIndex: 2,
+                  }}
+                />
+              </div>
               <div className="hero-card-label">Ruang Tamu</div>
               <div className="hero-card-title">Sofa Minimalis Executive</div>
               <div>
