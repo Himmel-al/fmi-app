@@ -20,9 +20,26 @@ const KatalogProduk = lazy(() => import("./pages/KatalogProduk"));
 const PesananMasuk = lazy(() => import("./pages/PesananMasuk"));
 const StockGudang = lazy(() => import("./pages/StockGudang"));
 const Analitik = lazy(() => import("./pages/Analitik"));
-const Pengaturan = lazy(() => import("./pages/Pengaturan"));  
-const ProductDetail = lazy(() => import("./pages/ProductDetail"))
+const Pengaturan = lazy(() => import("./pages/Pengaturan"));
+const ProductDetail = lazy(() => import("./pages/ProductDetail"));
 const GuestPage = lazy(() => import("./pages/guest/GuestPage"));
+const CustomerRoute = lazy(() => import("./components/CustomerRoute"))
+const AdminRoute = lazy(() => import("./components/AdminRoute"))
+
+
+const CustomerLayout = lazy(() => import("./layouts/CustomerLayout"));
+
+const DashboardCustomer = lazy(
+  () => import("./pages/customer/DashboardCustomer"),
+);
+
+const ProdukCustomer = lazy(() => import("./pages/customer/ProdukCustomer"));
+
+const Keranjang = lazy(() => import("./pages/customer/Keranjang"));
+
+const RiwayatPesanan = lazy(() => import("./pages/customer/RiwayatPesanan"));
+
+const ProfilCustomer = lazy(() => import("./pages/customer/ProfilCustomer"));
 
 function LoadingScreen() {
   return (
@@ -70,16 +87,32 @@ function App() {
           <Route path="/forgot-password" element={<Forgot />} />
         </Route>
 
-        <Route element={<ProtectedRoute />}>
-          <Route element={<AppLayout />}>
-            {/* Mengubah path Dashboard menjadi /dashboard agar tidak bentrok dengan LandingPage */}
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/katalogproduk" element={<KatalogProduk />} />
-            <Route path="/pesananmasuk" element={<PesananMasuk />} />
-            <Route path="/stockgudang" element={<StockGudang />} />
-            <Route path="/analitik" element={<Analitik />} />
-            <Route path="/pengaturan" element={<Pengaturan />} />
-            <Route path="/products/:id" element={<ProductDetail />} />
+        <Route element={<CustomerRoute />}>
+          <Route element={<CustomerLayout />}>
+            <Route path="/customer" element={<DashboardCustomer />} />
+
+            <Route path="/customer/produk" element={<ProdukCustomer />} />
+
+            <Route path="/customer/keranjang" element={<Keranjang />} />
+
+            <Route path="/customer/pesanan" element={<RiwayatPesanan />} />
+
+            <Route path="/customer/profil" element={<ProfilCustomer />} />
+          </Route>
+        </Route>
+
+        <Route element={<AdminRoute />}>
+          <Route element={<ProtectedRoute />}>
+            <Route element={<AppLayout />}>
+              {/* Mengubah path Dashboard menjadi /dashboard agar tidak bentrok dengan LandingPage */}
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/katalogproduk" element={<KatalogProduk />} />
+              <Route path="/pesananmasuk" element={<PesananMasuk />} />
+              <Route path="/stockgudang" element={<StockGudang />} />
+              <Route path="/analitik" element={<Analitik />} />
+              <Route path="/pengaturan" element={<Pengaturan />} />
+              <Route path="/products/:id" element={<ProductDetail />} />
+            </Route>
           </Route>
         </Route>
       </Routes>

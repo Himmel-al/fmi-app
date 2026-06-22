@@ -18,10 +18,18 @@ export default function Login() {
     try {
       if (email === "admin@sipp.com" && password === "admin123") {
         localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("token", "fake-token-123");
+        localStorage.setItem("role", "admin");
+        localStorage.setItem("token", "admin-token");
+
         navigate("/dashboard");
+      } else if (email === "customer@sipp.com" && password === "customer123") {
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("role", "customer");
+        localStorage.setItem("token", "customer-token");
+
+        navigate("/customer");
       } else {
-        setError("Email atau kata sandi salah.");
+        setError("Email atau password salah");
       }
     } finally {
       setLoading(false);
