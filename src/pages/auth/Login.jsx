@@ -11,22 +11,33 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-    try {
-      if (email === "admin@sipp.com" && password === "admin123") {
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("token", "fake-token-123");
-        navigate("/dashboard");
-      } else {
-        setError("Email atau kata sandi salah.");
-      }
-    } finally {
-      setLoading(false);
+  try {
+    const data = await loginUser(email, password);
+
+    console.log("Response Laravel:", data);
+
+    localStorage.setItem("isLoggedIn", "true");
+
+    if (data.token) {
+      localStorage.setItem("token", data.token);
     }
-  };
+
+    navigate("/dashboard");
+  } catch (error) {
+    console.error(error);
+
+    setError(
+      error.response?.data?.message ||
+      "Login gagal"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div style={styles.wrapper}>
