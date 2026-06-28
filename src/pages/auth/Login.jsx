@@ -15,15 +15,24 @@ export default function Login() {
   setLoading(true);
   setError("");
 
-  try {
-    const data = await loginUser(email, password);
+    try {
+      if (email === "admin@sipp.com" && password === "admin123") {
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("role", "admin");
+        localStorage.setItem("token", "admin-token");
 
-    console.log("Response Laravel:", data);
+        navigate("/dashboard");
+      } else if (email === "customer@sipp.com" && password === "customer123") {
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("role", "customer");
+        localStorage.setItem("token", "customer-token");
 
-    localStorage.setItem("isLoggedIn", "true");
-
-    if (data.token) {
-      localStorage.setItem("token", data.token);
+        navigate("/customer");
+      } else {
+        setError("Email atau password salah");
+      }
+    } finally {
+      setLoading(false);
     }
 
     navigate("/dashboard");
