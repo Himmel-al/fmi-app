@@ -38,6 +38,9 @@ const ProfilCustomer = lazy(() => import("./pages/customer/ProfilCustomer"));
 const Checkout = lazy(() => import("./pages/customer/Checkout"));
 const DetailProdukCustomer = lazy(() => import("./pages/customer/DetailProdukCustomer"));
 
+// ── PERBAIKAN: LAZY IMPORT UNTUK OWNER ──
+const DashboardOwner = lazy(() => import("./pages/owner/DashboardOwner"));
+
 function LoadingScreen() {
   return (
     <div
@@ -71,7 +74,7 @@ function App() {
   return (
     <Suspense fallback={<LoadingScreen />}>
       <Routes>
-        {/* Guest / Umum (Sudah dihapus /guest karena filenya tidak ada) */}
+        {/* Guest / Umum */}
         <Route element={<GuestLayout />}>
           <Route path="/" element={<LandingPage />} />
         </Route>
@@ -110,6 +113,11 @@ function App() {
             </Route>
           </Route>
         </Route>
+
+        {/* ── PERBAIKAN: RUTE KHUSUS OWNER ── */}
+        {/* Sementara ditaruh di luar middleware auth kustom agar akun dummy aman diakses */}
+        <Route path="/owner" element={<DashboardOwner />} />
+
       </Routes>
     </Suspense>
   );

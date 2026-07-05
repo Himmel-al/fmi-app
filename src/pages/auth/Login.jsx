@@ -238,11 +238,22 @@ export default function Login() {
     setLoading(true);
     setError("");
 
+    // --- FITUR BYPASS DUMMY ACCOUNT OWNER ---
+    if (email === "owner@sipp.com" && password === "owner123") {
+      setTimeout(() => {
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("role", "owner");
+        localStorage.setItem("token", "dummy-token-owner-12345");
+        setLoading(false);
+        navigate("/owner"); // Mengarah ke rute halaman owner
+      }, 800); // Simulasi efek loading delay sedikit
+      return;
+    }
+    // ----------------------------------------
+
     try {
-      // PERBAIKAN: Mengirim email dan password sebagai dua argumen terpisah sesuai authService.js
       const data = await loginUser(email, password);
       
-      // PERBAIKAN: authService langsung me-return response.data, jadi bisa diakses langsung
       const token = data.token;
       const role = data.user?.role; 
 
@@ -250,14 +261,15 @@ export default function Login() {
         throw new Error("Respons login dari server tidak lengkap.");
       }
 
-      // Menyimpan kredensial ke LocalStorage
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("role", role);
       localStorage.setItem("token", token);
 
-      // Mengarahkan rute berdasarkan role user dari database
+      // Mengarahkan rute berdasarkan role
       if (role === "admin") {
         navigate("/dashboard");
+      } else if (role === "owner") {
+        navigate("/owner");
       } else {
         navigate("/customer");
       }
