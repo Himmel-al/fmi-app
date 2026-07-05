@@ -40,6 +40,8 @@ const DetailProdukCustomer = lazy(() => import("./pages/customer/DetailProdukCus
 
 // ── PERBAIKAN: LAZY IMPORT UNTUK OWNER ──
 const DashboardOwner = lazy(() => import("./pages/owner/DashboardOwner"));
+const StockGudangOwner = lazy(() => import("./pages/owner/StockGudang"));
+const LaporanKeuangan = lazy(() => import("./pages/owner/LaporanKeuangan"));
 
 function LoadingScreen() {
   return (
@@ -117,6 +119,9 @@ function App() {
         {/* ── PERBAIKAN: RUTE KHUSUS OWNER ── */}
         {/* Sementara ditaruh di luar middleware auth kustom agar akun dummy aman diakses */}
         <Route path="/owner" element={<DashboardOwner />} />
+        <Route path="/ownerStockGudang" element={<StockGudangOwner />} />
+        <Route path="/ownerLaporanKeuangan" element={<LaporanKeuangan />} />
+
 
       </Routes>
     </Suspense>
