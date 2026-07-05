@@ -18,8 +18,6 @@ const Forgot = lazy(() => import("./pages/auth/Forgot"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const KatalogProduk = lazy(() => import("./pages/KatalogProduk"));
 const PesananMasuk = lazy(() => import("./pages/PesananMasuk"));
-const StockGudang = lazy(() => import("./pages/StockGudang"));
-const Analitik = lazy(() => import("./pages/Analitik"));
 const Pengaturan = lazy(() => import("./pages/Pengaturan"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
 const CustomerRoute = lazy(() => import("./components/CustomerRoute"));
@@ -107,8 +105,6 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/katalogproduk" element={<KatalogProduk />} />
               <Route path="/pesananmasuk" element={<PesananMasuk />} />
-              <Route path="/stockgudang" element={<StockGudang />} />
-              <Route path="/analitik" element={<Analitik />} />
               <Route path="/pengaturan" element={<Pengaturan />} />
               <Route path="/products/:id" element={<ProductDetail />} />
             </Route>

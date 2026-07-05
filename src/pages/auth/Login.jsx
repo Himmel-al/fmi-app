@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../api/authService";
 
-// ✅ styles dipindahkan ke LUAR komponen, sebelum digunakan
+// styles tetap berada di luar komponen
 const styles = {
   wrapper: {
     position: "relative",
@@ -239,27 +239,34 @@ export default function Login() {
     setError("");
 
     try {
-      if (email === "admin@sipp.com" && password === "admin123") {
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("role", "admin");
-        localStorage.setItem("token", "admin-token");
+      // PERBAIKAN: Mengirim email dan password sebagai dua argumen terpisah sesuai authService.js
+      const data = await loginUser(email, password);
+      
+      // PERBAIKAN: authService langsung me-return response.data, jadi bisa diakses langsung
+      const token = data.token;
+      const role = data.user?.role; 
 
+      if (!token || !role) {
+        throw new Error("Respons login dari server tidak lengkap.");
+      }
+
+      // Menyimpan kredensial ke LocalStorage
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("role", role);
+      localStorage.setItem("token", token);
+
+      // Mengarahkan rute berdasarkan role user dari database
+      if (role === "admin") {
         navigate("/dashboard");
-      } else if (email === "customer@sipp.com" && password === "customer123") {
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("role", "customer");
-        localStorage.setItem("token", "customer-token");
-
-        navigate("/customer");
       } else {
-        setError("Email atau password salah");
+        navigate("/customer");
       }
     } catch (error) {
       console.error(error);
-
       setError(
         error.response?.data?.message ||
-        "Login gagal"
+        error.message ||
+        "Login gagal, periksa koneksi atau kredensial Anda."
       );
     } finally {
       setLoading(false);
@@ -268,15 +275,12 @@ export default function Login() {
 
   return (
     <div style={styles.wrapper}>
-      {/* Ambient glow */}
       <div style={styles.glowTop} />
       <div style={styles.glowBottom} />
 
       <div style={styles.card}>
-        {/* Header accent line */}
         <div style={styles.accentLine} />
 
-        {/* Logo */}
         <div style={styles.logoBlock}>
           <div style={styles.logoRow}>
             <span style={styles.logoText}>SIPP</span>
@@ -285,16 +289,13 @@ export default function Login() {
           <p style={styles.logoSub}>Furniture Management</p>
         </div>
 
-        {/* Divider */}
         <div style={styles.divider} />
 
-        {/* Heading */}
         <div style={styles.headingBlock}>
           <h2 style={styles.heading}>Selamat Datang Kembali</h2>
           <p style={styles.subheading}>Masuk ke akun Anda untuk melanjutkan.</p>
         </div>
 
-        {/* Error */}
         {error && (
           <div style={styles.errorBox}>
             <svg
@@ -314,9 +315,7 @@ export default function Login() {
           </div>
         )}
 
-        {/* Form */}
         <form onSubmit={handleLogin} style={styles.form}>
-          {/* Email */}
           <div style={styles.fieldGroup}>
             <label style={styles.label}>Email</label>
             <div style={styles.inputWrapper}>
@@ -353,7 +352,6 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Password */}
           <div style={styles.fieldGroup}>
             <div style={styles.labelRow}>
               <label style={styles.label}>Kata Sandi</label>
@@ -426,7 +424,6 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
@@ -482,7 +479,6 @@ export default function Login() {
           </button>
         </form>
 
-        {/* Footer */}
         <p style={styles.footer}>
           Belum punya akun?{" "}
           <Link to="/register" style={styles.registerLink}>
@@ -490,7 +486,6 @@ export default function Login() {
           </Link>
         </p>
 
-        {/* Keyframes injected inline */}
         <style>{`
           @keyframes spin {
             from { transform: rotate(0deg); }

@@ -133,6 +133,21 @@ export default function KatalogProduk() {
     }
   };
 
+  // Handler Edit / Update Produk ke Backend dan Frontend State secara Real-time
+  const handleEditProduct = async (id_product, formData) => {
+    try {
+      const response = await api.put(`/products/${id_product}`, formData);
+      // Ganti data produk yang lama dengan data hasil update dari Laravel
+      setProducts((prev) =>
+        prev.map((p) => (p.id_product === id_product ? response.data : p))
+      );
+      setModal(null); // Tutup modal
+    } catch (error) {
+      console.error("Gagal mengupdate produk:", error);
+      alert("Gagal memperbarui produk, periksa inputan Anda!");
+    }
+  };
+
   // Handler Hapus Produk
   const handleDeleteProduct = async (id_product) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus produk ini?")) {
@@ -263,6 +278,7 @@ export default function KatalogProduk() {
           modal={modal} 
           onClose={()=>setModal(null)} 
           onAdd={handleAddProduct}
+          onEdit={handleEditProduct}
           onDelete={handleDeleteProduct}
         />
       )}
@@ -333,22 +349,30 @@ function ListRow({ p, onDetail }) {
   );
 }
 
-/* ── Modal Form & Detail Active ── */
-function Modal({ modal, onClose, onAdd, onDelete }) {
+/* ── Modal Form Tambah / Edit / Detail Produk ── */
+function Modal({ modal, onClose, onAdd, onEdit, onDelete }) {
   const isAdd = modal === "add";
   const p = isAdd ? null : modal;
   const currentStatus = p ? getProductStatus(p.stock) : null;
   const sc = p ? statusCfg[currentStatus] : null;
   const catName = p ? mapCategory(p.category_id) : "";
 
-  // Penampung State Local Form Input
-  const [form, setForm] = useState({
-    product_name: "",
-    category_id: 1, // Default Sofa (ID: 1)
-    price: "",
-    stock: "",
-    description: ""
-  });
+  // Mode edit: true kalau user klik tombol "Edit" di layar Detail Produk
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Penampung State Local Form Input.
+  // Kalau mode Add -> kosong. Kalau mode Detail/Edit -> langsung diisi data produk yang dipilih.
+  const [form, setForm] = useState(() =>
+    isAdd
+      ? { product_name: "", category_id: 1, price: "", stock: "", description: "" }
+      : {
+          product_name: p.product_name || "",
+          category_id: p.category_id || 1,
+          price: p.price ?? "",
+          stock: p.stock ?? "",
+          description: p.description || "",
+        }
+  );
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -356,59 +380,79 @@ function Modal({ modal, onClose, onAdd, onDelete }) {
       alert("Harap lengkapi semua field yang berbintang (*)");
       return;
     }
-    onAdd(form);
+
+    if (isEditing) {
+      onEdit(p.id_product, form);
+    } else {
+      onAdd(form);
+    }
   };
 
   const inp = {
     width:"100%", boxSizing:"border-box", background:"rgba(255,255,255,0.04)", border:`1px solid ${C.border}`, borderRadius:8, padding:"8px 12px", color:C.textPrimary, fontSize:13, outline:"none",
   };
 
+  // Form ini dipakai untuk mode Tambah maupun Edit (hanya judul & aksi submit yang beda)
+  const renderForm = () => (
+    <form onSubmit={handleSubmit}>
+      <h2 style={{ margin:"0 0 18px", fontSize:17, color:C.textPrimary }}>
+        {isEditing ? "Edit Produk" : "Tambah Produk Baru"}
+      </h2>
+
+      <div style={{ marginBottom:12 }}>
+        <label style={{ fontSize:11, color:C.textSecondary, display:"block", marginBottom:4 }}>Nama Produk *</label>
+        <input value={form.product_name} onChange={e => setForm({...form, product_name: e.target.value})} placeholder="contoh: Sofa Premium" style={inp}/>
+      </div>
+
+      <div style={{ marginBottom:12 }}>
+        <label style={{ fontSize:11, color:C.textSecondary, display:"block", marginBottom:4 }}>Kategori *</label>
+        <select value={form.category_id} onChange={e => setForm({...form, category_id: parseInt(e.target.value)})} style={inp}>
+          <option value={1} style={{background:C.card}}>Sofa</option>
+          <option value={2} style={{background:C.card}}>Meja</option>
+          <option value={3} style={{background:C.card}}>Lemari</option>
+          <option value={4} style={{background:C.card}}>Kursi</option>
+          <option value={5} style={{background:C.card}}>Kasur</option>
+          <option value={6} style={{background:C.card}}>Rak</option>
+        </select>
+      </div>
+
+      <div style={{ marginBottom:12 }}>
+        <label style={{ fontSize:11, color:C.textSecondary, display:"block", marginBottom:4 }}>Harga (Rp) *</label>
+        <input type="number" value={form.price} onChange={e => setForm({...form, price: e.target.value})} placeholder="contoh: 5000000" style={inp}/>
+      </div>
+
+      <div style={{ marginBottom:12 }}>
+        <label style={{ fontSize:11, color:C.textSecondary, display:"block", marginBottom:4 }}>Stok *</label>
+        <input type="number" value={form.stock} onChange={e => setForm({...form, stock: e.target.value})} placeholder="contoh: 10" style={inp}/>
+      </div>
+
+      <div style={{ marginBottom:16 }}>
+        <label style={{ fontSize:11, color:C.textSecondary, display:"block", marginBottom:4 }}>Deskripsi Produk</label>
+        <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})} placeholder="Tambahkan deskripsi singkat mengenai produk..." style={{ ...inp, height: 60, resize: "none" }}/>
+      </div>
+
+      <div style={{ display:"flex", gap:10, marginTop:8 }}>
+        <button type="submit" style={{ flex:1, background:`linear-gradient(135deg,${C.accent},#d97706)`, color:"#fff", border:"none", borderRadius:9, padding:"10px", fontWeight:600, cursor:"pointer", fontSize:13 }}>
+          {isEditing ? "Simpan Perubahan" : "Simpan"}
+        </button>
+        <button
+          type="button"
+          onClick={() => (isEditing ? setIsEditing(false) : onClose())}
+          style={{ flex:1, background:"rgba(255,255,255,0.04)", color:C.textSecondary, border:`1px solid ${C.border}`, borderRadius:9, padding:"10px", fontWeight:600, cursor:"pointer", fontSize:13 }}
+        >
+          Batal
+        </button>
+      </div>
+    </form>
+  );
+
   return (
     <div style={{ position:"fixed", inset:0, zIndex:999, background:"rgba(0,0,0,0.75)", backdropFilter:"blur(6px)", display:"flex", alignItems:"center", justifyContent:"center" }} onClick={onClose}>
       <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:"26px 26px 22px", width:420, maxWidth:"92vw", maxHeight:"88vh", overflowY:"auto", position:"relative" }} onClick={e=>e.stopPropagation()}>
         <button onClick={onClose} style={{ position:"absolute", top:14, right:14, background:"none", border:"none", color:C.textSecondary, fontSize:17, cursor:"pointer" }}>✕</button>
-        
-        {isAdd ? (
-          <form onSubmit={handleSubmit}>
-            <h2 style={{ margin:"0 0 18px", fontSize:17, color:C.textPrimary }}>Tambah Produk Baru</h2>
-            
-            <div style={{ marginBottom:12 }}>
-              <label style={{ fontSize:11, color:C.textSecondary, display:"block", marginBottom:4 }}>Nama Produk *</label>
-              <input value={form.product_name} onChange={e => setForm({...form, product_name: e.target.value})} placeholder="contoh: Sofa Premium" style={inp}/>
-            </div>
 
-            <div style={{ marginBottom:12 }}>
-              <label style={{ fontSize:11, color:C.textSecondary, display:"block", marginBottom:4 }}>Kategori *</label>
-              <select value={form.category_id} onChange={e => setForm({...form, category_id: parseInt(e.target.value)})} style={inp}>
-                <option value={1} style={{background:C.card}}>Sofa</option>
-                <option value={2} style={{background:C.card}}>Meja</option>
-                <option value={3} style={{background:C.card}}>Lemari</option>
-                <option value={4} style={{background:C.card}}>Kursi</option>
-                <option value={5} style={{background:C.card}}>Kasur</option>
-                <option value={6} style={{background:C.card}}>Rak</option>
-              </select>
-            </div>
-
-            <div style={{ marginBottom:12 }}>
-              <label style={{ fontSize:11, color:C.textSecondary, display:"block", marginBottom:4 }}>Harga (Rp) *</label>
-              <input type="number" value={form.price} onChange={e => setForm({...form, price: e.target.value})} placeholder="contoh: 5000000" style={inp}/>
-            </div>
-
-            <div style={{ marginBottom:12 }}>
-              <label style={{ fontSize:11, color:C.textSecondary, display:"block", marginBottom:4 }}>Stok Awal *</label>
-              <input type="number" value={form.stock} onChange={e => setForm({...form, stock: e.target.value})} placeholder="contoh: 10" style={inp}/>
-            </div>
-
-            <div style={{ marginBottom:16 }}>
-              <label style={{ fontSize:11, color:C.textSecondary, display:"block", marginBottom:4 }}>Deskripsi Produk</label>
-              <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})} placeholder="Tambahkan deskripsi singkat mengenai produk..." style={{ ...inp, height: 60, resize: "none" }}/>
-            </div>
-
-            <div style={{ display:"flex", gap:10, marginTop:8 }}>
-              <button type="submit" style={{ flex:1, background:`linear-gradient(135deg,${C.accent},#d97706)`, color:"#fff", border:"none", borderRadius:9, padding:"10px", fontWeight:600, cursor:"pointer", fontSize:13 }}>Simpan</button>
-              <button type="button" onClick={onClose} style={{ flex:1, background:"rgba(255,255,255,0.04)", color:C.textSecondary, border:`1px solid ${C.border}`, borderRadius:9, padding:"10px", fontWeight:600, cursor:"pointer", fontSize:13 }}>Batal</button>
-            </div>
-          </form>
+        {isAdd || isEditing ? (
+          renderForm()
         ) : (
           <>
             <h2 style={{ margin:"0 0 16px", fontSize:17, color:C.textPrimary }}>Detail Produk</h2>
@@ -439,7 +483,12 @@ function Modal({ modal, onClose, onAdd, onDelete }) {
               ))}
             </div>
             <div style={{ display:"flex", gap:10 }}>
-              <button style={{ flex:1, background:`linear-gradient(135deg,${C.accent},#d97706)`, color:"#fff", border:"none", borderRadius:9, padding:"9px", fontWeight:600, cursor:"pointer", fontSize:12 }}>✏️ Edit</button>
+              <button
+                onClick={() => setIsEditing(true)}
+                style={{ flex:1, background:`linear-gradient(135deg,${C.accent},#d97706)`, color:"#fff", border:"none", borderRadius:9, padding:"9px", fontWeight:600, cursor:"pointer", fontSize:12 }}
+              >
+                ✏️ Edit
+              </button>
               <button type="button" onClick={() => onDelete(p.id_product)} style={{ flex:1, background:C.redDim, color:C.red, border:`1px solid rgba(239,68,68,0.22)`, borderRadius:9, padding:"9px", fontWeight:600, cursor:"pointer", fontSize:12 }}>🗑️ Hapus</button>
             </div>
           </>

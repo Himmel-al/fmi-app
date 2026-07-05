@@ -10,9 +10,6 @@ import {
 } from "react-icons/md";
 import { NavLink, useNavigate } from "react-router-dom";
 
-/* ─────────────────────────────────────────────────────────────
-   INJECTED CSS (Modernized, Smooth Transitions & Micro-Interactions)
-───────────────────────────────────────────────────────────── */
 const SidebarStyles = () => (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap');
@@ -434,10 +431,8 @@ const navItems = [
   { id: "dashboard", path: "/dashboard",     icon: MdDashboard,         label: "Dashboard"      },
   { id: "katalog",   path: "/katalogproduk", icon: MdOutlineChair,      label: "Katalog Produk" },
   { id: "pesanan",   path: "/PesananMasuk",  icon: MdShoppingCart,      label: "Pesanan Masuk", badge: "3", badgeColor: "red" },
-  { id: "stok",      path: "/StockGudang",   icon: MdOutlineInventory2, label: "Stok Gudang"    },
 ];
 const reportItems = [
-  { id: "analitik",   path: "/analitik",   icon: MdBarChart, label: "Analitik"    },
   { id: "pengaturan", path: "/pengaturan", icon: MdSettings, label: "Pengaturan"  },
 ];
 
