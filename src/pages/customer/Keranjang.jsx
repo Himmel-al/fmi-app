@@ -11,25 +11,43 @@ export default function Keranjang() {
     setCartItems(storedCart);
   }, []);
 
-  const updateQty = (id, newQty) => {
+  // 1. Mengubah pencarian ID menjadi item.id_product
+  const updateQty = (id_product, newQty) => {
     if (newQty < 1) return;
+<<<<<<< HEAD
     // Disesuaikan menggunakan id_product sesuai data dari katalog produk
     const updated = cartItems.map((item) => (item.id_product === id ? { ...item, qty: newQty } : item));
+=======
+    const updated = cartItems.map((item) => 
+      item.id_product === id_product ? { ...item, qty: newQty } : item
+    );
+>>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
     setCartItems(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
     window.dispatchEvent(new Event("storage")); // Memicu update badge navbar layout secara instan
   };
 
+<<<<<<< HEAD
   const removeItem = (id) => {
     const updated = cartItems.filter((item) => item.id_product !== id);
+=======
+  // 2. Mengubah filter hapus menjadi item.id_product
+  const removeItem = (id_product) => {
+    const updated = cartItems.filter((item) => item.id_product !== id_product);
+>>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
     setCartItems(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
     window.dispatchEvent(new Event("storage")); // Memicu update badge navbar layout secara instan
   };
 
+  // 3. Mengubah perhitungan total harga menggunakan item.price
   const calculateTotal = () => {
+<<<<<<< HEAD
     // Disesuaikan menggunakan properti price/harga dari objek produk database Anda
     return cartItems.reduce((acc, item) => acc + (item.price || item.harga || 0) * item.qty, 0);
+=======
+    return cartItems.reduce((acc, item) => acc + Number(item.price || 0) * item.qty, 0);
+>>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
   };
 
   return (
@@ -74,6 +92,7 @@ export default function Keranjang() {
                   <th className="bg-transparent py-4 text-center">Hapus</th>
                 </tr>
               </thead>
+<<<<<<< HEAD
               <tbody className="divide-y divide-[#c9a84c]/5">
                 {cartItems.map((item) => {
                   const currentPrice = item.price || item.harga || 0;
@@ -120,6 +139,38 @@ export default function Keranjang() {
                           onClick={() => removeItem(item.id_product)} 
                           className="btn btn-ghost btn-sm btn-circle text-red-400 hover:text-white hover:bg-red-500/20"
                         >
+=======
+              <tbody>
+                {cartItems.map((item) => {
+                  // Memastikan harga dikonversi ke tipe angka
+                  const itemPrice = Number(item.price || 0);
+                  
+                  return (
+                    <tr key={item.id_product} className="hover:bg-base-200/40">
+                      <td>
+                        <div className="flex items-center gap-3">
+                          <img 
+                            src={item.image} 
+                            alt={item.product_name} 
+                            className="w-12 h-12 object-cover rounded-md bg-base-200" 
+                          />
+                          {/* 4. Menggunakan item.product_name */}
+                          <span className="font-semibold text-sm line-clamp-1">{item.product_name}</span>
+                        </div>
+                      </td>
+                      {/* 5. Menggunakan itemPrice dari database */}
+                      <td>Rp {itemPrice.toLocaleString("id-ID")}</td>
+                      <td>
+                        <div className="flex justify-center items-center gap-1">
+                          <button onClick={() => updateQty(item.id_product, item.qty - 1)} className="btn btn-xs btn-outline">-</button>
+                          <span className="w-8 text-center text-sm font-bold">{item.qty}</span>
+                          <button onClick={() => updateQty(item.id_product, item.qty + 1)} className="btn btn-xs btn-outline">+</button>
+                        </div>
+                      </td>
+                      <td className="font-semibold text-primary">Rp {(itemPrice * item.qty).toLocaleString("id-ID")}</td>
+                      <td>
+                        <button onClick={() => removeItem(item.id_product)} className="btn btn-ghost btn-xs text-error">
+>>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
                           <Trash2 size={16} />
                         </button>
                       </td>

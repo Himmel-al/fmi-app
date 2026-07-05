@@ -1,21 +1,45 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProductCard from "../../components/ProductCard";
+<<<<<<< HEAD
 import { MASTER_PRODUCTS } from "../../data/products";
 import { Sparkles, ArrowRight, ArrowUpRight, ShieldCheck, Truck, Zap } from "lucide-react";
+=======
+import axios from "../../api/axios"; // Pastikan path axios.js kamu sudah benar
+>>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
 
 export default function DashboardCustomer() {
   const navigate = useNavigate();
+  const [products, setProducts] = useState([]);
 
+  // 1. Mengambil data produk terlaris/unggulan langsung dari API Laravel
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("/products");
+        // Jika data dari Laravel dibungkus dlm objek 'data' atau 'products', sesuaikan penangkapannya
+        const data = response.data.products || response.data;
+        setProducts(data);
+      } catch (error) {
+        console.error("Gagal memuat produk unggulan:", error);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  // 2. DIUBAH: Menyesuaikan handleAddToCart dengan struktur id_product & product_name
   const handleAddToCart = (product) => {
     const currentCart = JSON.parse(localStorage.getItem("cart")) || [];
-    const exist = currentCart.find((item) => item.id === product.id);
+    const exist = currentCart.find((item) => item.id_product === product.id_product);
+    
     if (exist) {
       exist.qty += 1;
     } else {
       currentCart.push({ ...product, qty: 1 });
     }
+    
     localStorage.setItem("cart", JSON.stringify(currentCart));
-    alert(`${product.nama} berhasil masuk keranjang!`);
+    alert(`${product.product_name} berhasil masuk keranjang!`);
   };
 
   return (
@@ -95,10 +119,17 @@ export default function DashboardCustomer() {
         
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
+<<<<<<< HEAD
             { tag: "Sofa", emoji: "🛋️", desc: "Kenyamanan Ruang Tamu" },
             { tag: "Kursi", emoji: "🪑", desc: "Sentuhan Ergonomis Klasik" },
             { tag: "Tempat Tidur", emoji: "🛏️", desc: "Istirahat Berkualitas Premium" },
             { tag: "Meja Kerja", emoji: "🧑‍💻", desc: "Produktivitas Maksimal" }
+=======
+            { tag: "Sofa", emoji: "🛋️" },
+            { tag: "Kursi", emoji: "🪑" },
+            { tag: "Tempat Tidur", emoji: "🛏️" },
+            { tag: "Meja Kerja", emoji: "🧑‍💻" }
+>>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
           ].map((cat, idx) => (
             <div 
               key={idx} 
@@ -136,6 +167,7 @@ export default function DashboardCustomer() {
           </button>
         </div>
 
+<<<<<<< HEAD
         {/* Render Product Card Wrapper */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {MASTER_PRODUCTS.slice(0, 4).map((product) => (
@@ -146,6 +178,23 @@ export default function DashboardCustomer() {
               />
             </div>
           ))}
+=======
+        <div className="grid md:grid-cols-4 gap-6">
+          {products.length === 0 ? (
+            <div className="col-span-full text-center text-base-content/60 py-8">
+              Sedang memuat produk unggulan...
+            </div>
+          ) : (
+            // Mengambil 4 produk teratas yang didapatkan dari API Laravel
+            products.slice(0, 4).map((product) => (
+              <ProductCard 
+                key={product.id_product} 
+                product={product} 
+                onAddToCart={handleAddToCart} 
+              />
+            ))
+          )}
+>>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
         </div>
       </section>
 

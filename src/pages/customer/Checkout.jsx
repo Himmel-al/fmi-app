@@ -26,12 +26,17 @@ export default function Checkout() {
     }
   }, []);
 
+<<<<<<< HEAD
   // Hitung total belanjaan dengan fallback property (harga/price dan qty/kuantitas)
   const totalHarga = cartItems.reduce((sum, item) => {
     const itemPrice = item.price || item.harga || 0;
     const itemQty = item.qty || item.kuantitas || 1;
     return sum + (itemPrice * itemQty);
   }, 0);
+=======
+  // 1. DIUBAH: Menggunakan item.price dan item.qty untuk kalkulasi total
+  const totalHarga = cartItems.reduce((sum, item) => sum + (Number(item.price || 0) * (item.qty || 1)), 0);
+>>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
 
   const handleBuatPesanan = (e) => {
     e.preventDefault();
@@ -41,17 +46,32 @@ export default function Checkout() {
     }
 
     try {
+<<<<<<< HEAD
+=======
+      // Ambil data pesanan terdahulu dari localStorage (jika ada)
+>>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
       const existingOrders = JSON.parse(localStorage.getItem("orders")) || [];
       const savedProfile = JSON.parse(localStorage.getItem("customerProfile"));
 
+<<<<<<< HEAD
       // Buat objek transaksi baru yang sinkron dengan struktur database & halaman riwayat
+=======
+      // 2. DIUBAH: Pemetaan items menggunakan product_name dan qty agar selaras
+>>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
       const newOrder = {
         id: Date.now().toString().slice(-5), 
         tanggal: new Date().toLocaleDateString("id-ID"),
+<<<<<<< HEAD
         customer: savedProfile?.nama || "Premium Client", 
         items: cartItems.map((item) => ({
           product_name: item.product_name || item.nama,
           qty: item.qty || item.kuantitas || 1, 
+=======
+        customer: "Pelanggan Umum", 
+        items: cartItems.map((item) => ({
+          nama: item.product_name,
+          qty: item.qty || 1, 
+>>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
         })),
         total: totalHarga,
         alamat: alamat,
@@ -59,10 +79,18 @@ export default function Checkout() {
         status: "Diproses",
       };
 
+<<<<<<< HEAD
       const updatedOrders = [newOrder, ...existingOrders];
       localStorage.setItem("orders", JSON.stringify(updatedOrders));
 
       // Bersihkan isi keranjang belanja dan trigger pembaruan badge navbar layout
+=======
+      // Gabungkan data baru ke baris paling atas
+      const updatedOrders = [newOrder, ...existingOrders];
+      localStorage.setItem("orders", JSON.stringify(updatedOrders));
+
+      // Bersihkan isi keranjang belanja setelah checkout berhasil
+>>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
       localStorage.removeItem("cart");
       window.dispatchEvent(new Event("storage"));
 
@@ -74,6 +102,10 @@ export default function Checkout() {
         alert("Pesanan dengan metode COD Premium Anda berhasil dijadwalkan!");
       }
       
+<<<<<<< HEAD
+=======
+      // Mengarahkan rute ke halaman riwayat pesanan
+>>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
       navigate("/customer/pesanan");
     } catch (error) {
       console.error("Gagal memproses pesanan:", error);
@@ -182,6 +214,7 @@ export default function Checkout() {
             {cartItems.length === 0 ? (
               <p className="text-xs text-white/40 py-4 italic text-center">Tidak ada produk eksklusif di keranjang.</p>
             ) : (
+<<<<<<< HEAD
               cartItems.map((item, idx) => {
                 const itemPrice = item.price || item.harga || 0;
                 const itemQty = item.qty || item.kuantitas || 1;
@@ -194,6 +227,22 @@ export default function Checkout() {
                       <p className="text-xs text-white/40 font-mono mt-0.5">{itemQty}x @ Rp {itemPrice.toLocaleString("id-ID")}</p>
                     </div>
                     <p className="font-bold text-white/90 text-xs font-mono pt-1">Rp {(itemPrice * itemQty).toLocaleString("id-ID")}</p>
+=======
+              cartItems.map((item) => {
+                // 3. DIUBAH: Parsing harga ke tipe Number agar aman dari manipulasi string
+                const itemPrice = Number(item.price || 0);
+                const itemQty = item.qty || 1;
+
+                return (
+                  <div key={item.id_product || item.id} className="flex justify-between py-3 text-sm">
+                    <div>
+                      {/* 4. DIUBAH: Menampilkan item.product_name */}
+                      <p className="font-semibold text-base-content line-clamp-1">{item.product_name}</p>
+                      {/* 5. DIUBAH: Menampilkan itemQty dan itemPrice */}
+                      <p className="text-xs text-base-content/60">{itemQty}x @ Rp {itemPrice.toLocaleString("id-ID")}</p>
+                    </div>
+                    <p className="font-medium">Rp {(itemPrice * itemQty).toLocaleString("id-ID")}</p>
+>>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
                   </div>
                 );
               })
