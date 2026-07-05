@@ -1,6 +1,8 @@
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { ShoppingCart, User, Package, Home, LogOut, Layers, Sparkles } from "lucide-react";
+import { ShoppingCart, User, Package, Home, LogOut, Sparkles } from "lucide-react";
+// Diubah: Mengimpor file gambar Logo dari aset lokal Anda
+import logoApp from "../assets/Logo.jpeg"; 
 
 export default function CustomerLayout() {
   const navigate = useNavigate();
@@ -49,13 +51,18 @@ export default function CustomerLayout() {
         <div className="navbar max-w-7xl mx-auto rounded-2xl bg-[#1a1610]/80 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.5)] border border-[#c9a84c]/20 px-6 md:px-8 transition-all duration-300 hover:border-[#c9a84c]/40">
           
           {/* BRAND LOGO AREA */}
+          {/* Diubah: Mengganti ikon pembungkus bawaan & menyematkan aset Logo baru */}
           <div className="flex-1">
             <Link to="/customer" className="flex items-center gap-3 group">
-              <div className="bg-gradient-to-br from-[#c9a84c] to-[#e8c97a] p-2 rounded-xl text-[#0d0b08] shadow-lg shadow-[#c9a84c]/20 transform transition-transform group-hover:rotate-12 duration-300">
-                <Layers size={20} className="stroke-[2.5]" />
+              <div className="overflow-hidden w-10 h-10 rounded-xl border border-[#c9a84c]/30 shadow-lg shadow-[#c9a84c]/10 transform transition-all group-hover:scale-105 group-hover:border-[#c9a84c]/60 duration-300 bg-[#0d0b08]">
+                <img 
+                  src={logoApp} 
+                  alt="SIPP Logo" 
+                  className="w-full h-full object-cover" 
+                />
               </div>
               <div className="flex flex-col">
-                <span className="text-xl font-black font-serif text-white tracking-widest group-hover:text-[#c9a84c] transition-colors">
+                <span className="text-xl font-black font-serif text-white tracking-widest group-hover:text-[#c9a84c] transition-colors uppercase">
                   SIPP<span className="text-[#c9a84c]">.</span>
                 </span>
                 <span className="text-[9px] text-[#c9a84c] font-bold tracking-[0.2em] uppercase -mt-1 hidden sm:block">
