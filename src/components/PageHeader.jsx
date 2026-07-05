@@ -1,14 +1,17 @@
 // src/components/PageHeader.jsx
 export default function PageHeader({
   title = "Dashboard",
-  breadcrumb = [],          // contoh: [{ label: "Dashboard", href: "/" }, { label: "Katalog Produk" }]
-  buttonLabel = null,       // null = tombol tidak muncul
+  breadcrumb = [], // contoh: [{ label: "Dashboard", href: "/" }, { label: "Katalog Produk" }]
+  buttonLabel = null, // null = tombol tidak muncul
   onButtonClick = () => {},
-  buttonStyle = "green",    // "green" | "orange"
+  buttonStyle = "green", // "green" | "orange"
 }) {
   const btnColor =
     buttonStyle === "orange"
-      ? { background: "linear-gradient(135deg,#f59e0b,#d97706)", boxShadow: "0 4px 14px rgba(245,158,11,0.25)" }
+      ? {
+          background: "linear-gradient(135deg,#f59e0b,#d97706)",
+          boxShadow: "0 4px 14px rgba(245,158,11,0.25)",
+        }
       : { background: "#10b981", boxShadow: "0 4px 14px rgba(16,185,129,0.2)" };
 
   return (
@@ -16,7 +19,7 @@ export default function PageHeader({
       className="flex items-center justify-between p-6 mb-2"
       id="pageheader-container"
     >
-      {/* Kiri: Judul & Breadcrumb */}
+      {/* Kiri: Judul & Breadcrumb /}
       <div className="flex flex-col gap-1">
         <h1 className="text-3xl font-bold" style={{ color: "#f1f5f9" }}>
           {title}
@@ -43,7 +46,7 @@ export default function PageHeader({
         )}
       </div>
 
-      {/* Kanan: Tombol (opsional) */}
+      {/ Kanan: Tombol (opsional) */}
       {buttonLabel && (
         <button
           onClick={onButtonClick}
