@@ -20,8 +20,8 @@ export default function Checkout() {
     }
   }, []);
 
-  // Hitung total belanjaan
-  const totalHarga = cartItems.reduce((sum, item) => sum + (item.harga * (item.kuantitas || 1)), 0);
+  // 1. DIUBAH: Menggunakan item.price dan item.qty untuk kalkulasi total
+  const totalHarga = cartItems.reduce((sum, item) => sum + (Number(item.price || 0) * (item.qty || 1)), 0);
 
   const handleBuatPesanan = (e) => {
     e.preventDefault();
@@ -31,17 +31,17 @@ export default function Checkout() {
     }
 
     try {
-      // 1. Ambil data pesanan terdahulu dari localStorage (jika ada)
+      // Ambil data pesanan terdahulu dari localStorage (jika ada)
       const existingOrders = JSON.parse(localStorage.getItem("orders")) || [];
 
-      // 2. Buat objek transaksi baru dengan mencocokkan struktur data RiwayatPesanan & Admin
+      // 2. DIUBAH: Pemetaan items menggunakan product_name dan qty agar selaras
       const newOrder = {
         id: Date.now().toString().slice(-5), // Membuat 5 digit ID acak yang unik
         tanggal: new Date().toLocaleDateString("id-ID"),
-        customer: "Pelanggan Umum", // Bisa disesuaikan jika ada sistem auth nama user
+        customer: "Pelanggan Umum", 
         items: cartItems.map((item) => ({
-          nama: item.nama,
-          qty: item.kuantitas || 1, 
+          nama: item.product_name,
+          qty: item.qty || 1, 
         })),
         total: totalHarga,
         alamat: alamat,
@@ -49,11 +49,11 @@ export default function Checkout() {
         status: "Diproses",
       };
 
-      // 3. Gabungkan data baru ke baris paling atas
+      // Gabungkan data baru ke baris paling atas
       const updatedOrders = [newOrder, ...existingOrders];
       localStorage.setItem("orders", JSON.stringify(updatedOrders));
 
-      // 4. Bersihkan isi keranjang belanja setelah checkout berhasil
+      // Bersihkan isi keranjang belanja setelah checkout berhasil
       localStorage.removeItem("cart");
 
       // Tampilkan informasi rekening Mandiri jika memilih metode transfer
@@ -65,7 +65,7 @@ export default function Checkout() {
         alert("Pesanan Anda (COD) berhasil dibuat!");
       }
       
-      // 5. Mengarahkan rute ke halaman riwayat pesanan
+      // Mengarahkan rute ke halaman riwayat pesanan
       navigate("/customer/pesanan");
     } catch (error) {
       console.error("Gagal memproses pesanan:", error);
@@ -134,15 +134,23 @@ export default function Checkout() {
             {cartItems.length === 0 ? (
               <p className="text-sm text-base-content/60 py-2">Tidak ada produk dalam keranjang.</p>
             ) : (
-              cartItems.map((item) => (
-                <div key={item.id} className="flex justify-between py-3 text-sm">
-                  <div>
-                    <p className="font-semibold text-base-content line-clamp-1">{item.nama}</p>
-                    <p className="text-xs text-base-content/60">{item.kuantitas || 1}x @ Rp {item.harga?.toLocaleString("id-ID")}</p>
+              cartItems.map((item) => {
+                // 3. DIUBAH: Parsing harga ke tipe Number agar aman dari manipulasi string
+                const itemPrice = Number(item.price || 0);
+                const itemQty = item.qty || 1;
+
+                return (
+                  <div key={item.id_product || item.id} className="flex justify-between py-3 text-sm">
+                    <div>
+                      {/* 4. DIUBAH: Menampilkan item.product_name */}
+                      <p className="font-semibold text-base-content line-clamp-1">{item.product_name}</p>
+                      {/* 5. DIUBAH: Menampilkan itemQty dan itemPrice */}
+                      <p className="text-xs text-base-content/60">{itemQty}x @ Rp {itemPrice.toLocaleString("id-ID")}</p>
+                    </div>
+                    <p className="font-medium">Rp {(itemPrice * itemQty).toLocaleString("id-ID")}</p>
                   </div>
-                  <p className="font-medium">Rp {((item.harga || 0) * (item.kuantitas || 1)).toLocaleString("id-ID")}</p>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
 

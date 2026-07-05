@@ -11,21 +11,26 @@ export default function Keranjang() {
     setCartItems(storedCart);
   }, []);
 
-  const updateQty = (id, newQty) => {
+  // 1. Mengubah pencarian ID menjadi item.id_product
+  const updateQty = (id_product, newQty) => {
     if (newQty < 1) return;
-    const updated = cartItems.map((item) => (item.id === id ? { ...item, qty: newQty } : item));
+    const updated = cartItems.map((item) => 
+      item.id_product === id_product ? { ...item, qty: newQty } : item
+    );
     setCartItems(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
   };
 
-  const removeItem = (id) => {
-    const updated = cartItems.filter((item) => item.id !== id);
+  // 2. Mengubah filter hapus menjadi item.id_product
+  const removeItem = (id_product) => {
+    const updated = cartItems.filter((item) => item.id_product !== id_product);
     setCartItems(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
   };
 
+  // 3. Mengubah perhitungan total harga menggunakan item.price
   const calculateTotal = () => {
-    return cartItems.reduce((acc, item) => acc + item.harga * item.qty, 0);
+    return cartItems.reduce((acc, item) => acc + Number(item.price || 0) * item.qty, 0);
   };
 
   return (
@@ -51,30 +56,41 @@ export default function Keranjang() {
                 </tr>
               </thead>
               <tbody>
-                {cartItems.map((item) => (
-                  <tr key={item.id} className="hover:bg-base-200/40">
-                    <td>
-                      <div className="flex items-center gap-3">
-                        <img src={item.image} alt={item.nama} className="w-12 h-12 object-cover rounded-md bg-base-200" />
-                        <span className="font-semibold text-sm line-clamp-1">{item.nama}</span>
-                      </div>
-                    </td>
-                    <td>Rp {item.harga.toLocaleString("id-ID")}</td>
-                    <td>
-                      <div className="flex justify-center items-center gap-1">
-                        <button onClick={() => updateQty(item.id, item.qty - 1)} className="btn btn-xs btn-outline">-</button>
-                        <span className="w-8 text-center text-sm font-bold">{item.qty}</span>
-                        <button onClick={() => updateQty(item.id, item.qty + 1)} className="btn btn-xs btn-outline">+</button>
-                      </div>
-                    </td>
-                    <td className="font-semibold text-primary">Rp {(item.harga * item.qty).toLocaleString("id-ID")}</td>
-                    <td>
-                      <button onClick={() => removeItem(item.id)} className="btn btn-ghost btn-xs text-error">
-                        <Trash2 size={16} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {cartItems.map((item) => {
+                  // Memastikan harga dikonversi ke tipe angka
+                  const itemPrice = Number(item.price || 0);
+                  
+                  return (
+                    <tr key={item.id_product} className="hover:bg-base-200/40">
+                      <td>
+                        <div className="flex items-center gap-3">
+                          <img 
+                            src={item.image} 
+                            alt={item.product_name} 
+                            className="w-12 h-12 object-cover rounded-md bg-base-200" 
+                          />
+                          {/* 4. Menggunakan item.product_name */}
+                          <span className="font-semibold text-sm line-clamp-1">{item.product_name}</span>
+                        </div>
+                      </td>
+                      {/* 5. Menggunakan itemPrice dari database */}
+                      <td>Rp {itemPrice.toLocaleString("id-ID")}</td>
+                      <td>
+                        <div className="flex justify-center items-center gap-1">
+                          <button onClick={() => updateQty(item.id_product, item.qty - 1)} className="btn btn-xs btn-outline">-</button>
+                          <span className="w-8 text-center text-sm font-bold">{item.qty}</span>
+                          <button onClick={() => updateQty(item.id_product, item.qty + 1)} className="btn btn-xs btn-outline">+</button>
+                        </div>
+                      </td>
+                      <td className="font-semibold text-primary">Rp {(itemPrice * item.qty).toLocaleString("id-ID")}</td>
+                      <td>
+                        <button onClick={() => removeItem(item.id_product)} className="btn btn-ghost btn-xs text-error">
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
