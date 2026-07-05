@@ -19,7 +19,7 @@ export const MASTER_PRODUCTS = [
   },
   {
     id: 3,
-    nama: "Tempat Tidur King Size Minimalis",
+    nama: "Tempat Tidur King Size MInimalis",
     harga: 4200000,
     kategori: "Tempat Tidur",
     image: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=600&q=80",

@@ -1,33 +1,58 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProductCard from "../../components/ProductCard";
-import { MASTER_PRODUCTS } from "../../data/products";
+import { getProducts } from "../../api/productService"; // Menggunakan service yang sudah di-import
 
 export default function ProdukCustomer() {
   const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Semua");
+  
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const catParam = searchParams.get("category");
     if (catParam) setSelectedCategory(catParam);
   }, [searchParams]);
 
+  // Mengubah fetch mentah menjadi getProducts() dari API Service
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await getProducts(); 
+        setProducts(data); // Axios di service langsung mengembalikan data berupa array
+      } catch (error) {
+        console.error("Error fetching products via service:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   const handleAddToCart = (product) => {
     const currentCart = JSON.parse(localStorage.getItem("cart")) || [];
-    const exist = currentCart.find((item) => item.id === product.id);
+    const exist = currentCart.find((item) => item.id_product === product.id_product);
+    
     if (exist) {
       exist.qty += 1;
     } else {
       currentCart.push({ ...product, qty: 1 });
     }
+    
     localStorage.setItem("cart", JSON.stringify(currentCart));
-    alert(`${product.nama} masuk ke keranjang belanja!`);
+    alert(`${product.product_name} masuk ke keranjang belanja!`);
   };
 
-  const filteredProducts = MASTER_PRODUCTS.filter((product) => {
-    const matchSearch = product.nama.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchCategory = selectedCategory === "Semua" || product.kategori === selectedCategory;
+  const filteredProducts = products.filter((product) => {
+    const matchSearch = product.product_name.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Mengambil nama kategori dari relasi database tabel 'categories'
+    const categoryName = product.category ? product.category.category_name : "";
+    const matchCategory = selectedCategory === "Semua" || categoryName === selectedCategory;
+    
     return matchSearch && matchCategory;
   });
 
@@ -36,7 +61,9 @@ export default function ProdukCustomer() {
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center border-b pb-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Katalog Furnitur</h1>
-          <p className="text-sm text-base-content/60 mt-1">Menampilkan {filteredProducts.length} produk pilihan</p>
+          <p className="text-sm text-base-content/60 mt-1">
+            Menampilkan {filteredProducts.length} produk pilihan
+          </p>
         </div>
 
         <div className="flex flex-wrap gap-2 w-full md:w-auto">
@@ -61,14 +88,19 @@ export default function ProdukCustomer() {
         </div>
       </div>
 
-      {filteredProducts.length === 0 ? (
+      {isLoading ? (
+        <div className="text-center py-16">
+           <span className="loading loading-spinner loading-lg text-primary"></span>
+           <p className="mt-4 text-base-content/60">Memuat produk...</p>
+        </div>
+      ) : filteredProducts.length === 0 ? (
         <div className="text-center py-16 bg-base-200 rounded-2xl">
           <p className="text-lg font-medium text-base-content/60">Produk yang kamu cari tidak ditemukan.</p>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
           {filteredProducts.map((item) => (
-            <ProductCard key={item.id} product={item} onAddToCart={handleAddToCart} />
+            <ProductCard key={item.id_product} product={item} onAddToCart={handleAddToCart} />
           ))}
         </div>
       )}
