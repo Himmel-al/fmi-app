@@ -5,8 +5,15 @@ export const loginUser = async (email, password) => {
   return response.data;
 };
 
-export const registerUser = async (name, email, password) => {
-  const response = await api.post("/auth/register", { name, email, password });
+export const registerUser = async (formData) => {
+  const response = await api.post("/auth/register", {
+    name: formData.name,
+    email: formData.email,
+    password: formData.password,
+    phone: formData.phone,
+    address: formData.address,
+    role: "customer", // dipaksa customer, tidak bisa diubah dari form
+  });
   return response.data;
 };
 
