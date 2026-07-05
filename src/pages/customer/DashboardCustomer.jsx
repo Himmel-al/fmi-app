@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProductCard from "../../components/ProductCard";
-<<<<<<< HEAD
-import { MASTER_PRODUCTS } from "../../data/products";
-import { Sparkles, ArrowRight, ArrowUpRight, ShieldCheck, Truck, Zap } from "lucide-react";
-=======
 import axios from "../../api/axios"; // Pastikan path axios.js kamu sudah benar
->>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
+import { 
+  Sparkles, 
+  ArrowRight, 
+  ArrowUpRight, 
+  ShieldCheck, 
+  Truck, 
+  Zap 
+} from "lucide-react";
 
 export default function DashboardCustomer() {
   const navigate = useNavigate();
@@ -27,10 +30,13 @@ export default function DashboardCustomer() {
     fetchProducts();
   }, []);
 
-  // 2. DIUBAH: Menyesuaikan handleAddToCart dengan struktur id_product & product_name
+  // 2. Menyesuaikan handleAddToCart dengan struktur id_product & product_name
   const handleAddToCart = (product) => {
     const currentCart = JSON.parse(localStorage.getItem("cart")) || [];
-    const exist = currentCart.find((item) => item.id_product === product.id_product);
+    const productId = product.id_product || product.id;
+    const productName = product.product_name || product.nama || "Produk";
+
+    const exist = currentCart.find((item) => (item.id_product || item.id) === productId);
     
     if (exist) {
       exist.qty += 1;
@@ -39,11 +45,15 @@ export default function DashboardCustomer() {
     }
     
     localStorage.setItem("cart", JSON.stringify(currentCart));
-    alert(`${product.product_name} berhasil masuk keranjang!`);
+    
+    // Memicu sinkronisasi angka di keranjang navbar secara realtime
+    window.dispatchEvent(new Event("storage"));
+    
+    alert(`${productName} berhasil masuk keranjang!`);
   };
 
   return (
-    <div className="space-y-16 pb-12 text-[#faf7f0]">
+    <div className="space-y-16 pb-12 text-[#faf7f0] relative">
       {/* ── AMBIENT GLOW EFFECTS (FUTURISTIC ORB) ── */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#c9a84c]/5 rounded-full filter blur-[100px] pointer-events-none" />
       <div className="absolute top-1/3 left-10 w-72 h-72 bg-[#c9a84c]/3 rounded-full filter blur-[80px] pointer-events-none" />
@@ -119,17 +129,10 @@ export default function DashboardCustomer() {
         
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-<<<<<<< HEAD
-            { tag: "Sofa", emoji: "🛋️", desc: "Kenyamanan Ruang Tamu" },
-            { tag: "Kursi", emoji: "🪑", desc: "Sentuhan Ergonomis Klasik" },
-            { tag: "Tempat Tidur", emoji: "🛏️", desc: "Istirahat Berkualitas Premium" },
-            { tag: "Meja Kerja", emoji: "🧑‍💻", desc: "Produktivitas Maksimal" }
-=======
-            { tag: "Sofa", emoji: "🛋️" },
-            { tag: "Kursi", emoji: "🪑" },
-            { tag: "Tempat Tidur", emoji: "🛏️" },
-            { tag: "Meja Kerja", emoji: "🧑‍💻" }
->>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
+            { tag: "Sofa", emoji: "🛋️", desc: "Kenyamanan berkelas" },
+            { tag: "Kursi", emoji: "🪑", desc: "Sandaran ergonomis" },
+            { tag: "Tempat Tidur", emoji: "🛏️", desc: "Tidur lebih lelap" },
+            { tag: "Meja Kerja", emoji: "🧑‍💻", desc: "Produktivitas maksimal" }
           ].map((cat, idx) => (
             <div 
               key={idx} 
@@ -167,34 +170,21 @@ export default function DashboardCustomer() {
           </button>
         </div>
 
-<<<<<<< HEAD
-        {/* Render Product Card Wrapper */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {MASTER_PRODUCTS.slice(0, 4).map((product) => (
-            <div key={product.id} className="transition-all duration-300 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden">
-              <ProductCard 
-                product={product} 
-                onAddToCart={handleAddToCart} 
-              />
-            </div>
-          ))}
-=======
-        <div className="grid md:grid-cols-4 gap-6">
           {products.length === 0 ? (
-            <div className="col-span-full text-center text-base-content/60 py-8">
-              Sedang memuat produk unggulan...
+            <div className="col-span-full text-center text-white/40 py-12 bg-[#1a1610] rounded-2xl border border-[#c9a84c]/10 animate-pulse">
+              Sedang memuat mahakarya pilihan...
             </div>
           ) : (
             // Mengambil 4 produk teratas yang didapatkan dari API Laravel
             products.slice(0, 4).map((product) => (
               <ProductCard 
-                key={product.id_product} 
+                key={product.id_product || product.id} 
                 product={product} 
                 onAddToCart={handleAddToCart} 
               />
             ))
           )}
->>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
         </div>
       </section>
 

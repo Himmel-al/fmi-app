@@ -14,27 +14,17 @@ export default function Keranjang() {
   // 1. Mengubah pencarian ID menjadi item.id_product
   const updateQty = (id_product, newQty) => {
     if (newQty < 1) return;
-<<<<<<< HEAD
-    // Disesuaikan menggunakan id_product sesuai data dari katalog produk
-    const updated = cartItems.map((item) => (item.id_product === id ? { ...item, qty: newQty } : item));
-=======
     const updated = cartItems.map((item) => 
       item.id_product === id_product ? { ...item, qty: newQty } : item
     );
->>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
     setCartItems(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
     window.dispatchEvent(new Event("storage")); // Memicu update badge navbar layout secara instan
   };
 
-<<<<<<< HEAD
-  const removeItem = (id) => {
-    const updated = cartItems.filter((item) => item.id_product !== id);
-=======
   // 2. Mengubah filter hapus menjadi item.id_product
   const removeItem = (id_product) => {
     const updated = cartItems.filter((item) => item.id_product !== id_product);
->>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
     setCartItems(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
     window.dispatchEvent(new Event("storage")); // Memicu update badge navbar layout secara instan
@@ -42,12 +32,7 @@ export default function Keranjang() {
 
   // 3. Mengubah perhitungan total harga menggunakan item.price
   const calculateTotal = () => {
-<<<<<<< HEAD
-    // Disesuaikan menggunakan properti price/harga dari objek produk database Anda
-    return cartItems.reduce((acc, item) => acc + (item.price || item.harga || 0) * item.qty, 0);
-=======
     return cartItems.reduce((acc, item) => acc + Number(item.price || 0) * item.qty, 0);
->>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
   };
 
   return (
@@ -78,7 +63,7 @@ export default function Keranjang() {
           </button>
         </div>
       ) : (
-        /* KONDISI ADS ITEM */
+        /* KONDISI ADA ITEM */
         <div className="grid lg:grid-cols-3 gap-8 items-start">
           {/* DAFTAR ITEM TABEL */}
           <div className="lg:col-span-2 overflow-x-auto rounded-2xl bg-[#1a1610]/80 border border-[#c9a84c]/10 shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-2 backdrop-blur-xl">
@@ -92,67 +77,19 @@ export default function Keranjang() {
                   <th className="bg-transparent py-4 text-center">Hapus</th>
                 </tr>
               </thead>
-<<<<<<< HEAD
-              <tbody className="divide-y divide-[#c9a84c]/5">
-                {cartItems.map((item) => {
-                  const currentPrice = item.price || item.harga || 0;
-                  const currentName = item.product_name || item.nama;
-                  const currentImg = item.image || item.image_url;
-
-                  return (
-                    <tr key={item.id_product} className="hover:bg-[#c9a84c]/5 transition-colors group">
-                      <td className="bg-transparent py-5">
-                        <div className="flex items-center gap-4">
-                          <img 
-                            src={currentImg} 
-                            alt={currentName} 
-                            className="w-14 h-14 object-cover rounded-xl border border-[#c9a84c]/20 bg-[#0d0b08] shadow-inner" 
-                          />
-                          <span className="font-medium text-sm max-w-[180px] truncate block group-hover:text-[#c9a84c] transition-colors">
-                            {currentName}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="bg-transparent text-sm">Rp {currentPrice.toLocaleString("id-ID")}</td>
-                      <td className="bg-transparent">
-                        <div className="flex justify-center items-center gap-2">
-                          <button 
-                            onClick={() => updateQty(item.id_product, item.qty - 1)} 
-                            className="btn btn-xs btn-square bg-[#2a2218] text-[#c9a84c] border-none hover:bg-[#c9a84c] hover:text-[#0d0b08] rounded-md transition-all duration-200"
-                          >
-                            <Minus size={12} />
-                          </button>
-                          <span className="w-8 text-center text-sm font-bold font-mono">{item.qty}</span>
-                          <button 
-                            onClick={() => updateQty(item.id_product, item.qty + 1)} 
-                            className="btn btn-xs btn-square bg-[#2a2218] text-[#c9a84c] border-none hover:bg-[#c9a84c] hover:text-[#0d0b08] rounded-md transition-all duration-200"
-                          >
-                            <Plus size={12} />
-                          </button>
-                        </div>
-                      </td>
-                      <td className="bg-transparent font-semibold text-[#c9a84c] text-sm">
-                        Rp {(currentPrice * item.qty).toLocaleString("id-ID")}
-                      </td>
-                      <td className="bg-transparent text-center">
-                        <button 
-                          onClick={() => removeItem(item.id_product)} 
-                          className="btn btn-ghost btn-sm btn-circle text-red-400 hover:text-white hover:bg-red-500/20"
-                        >
-=======
               <tbody>
                 {cartItems.map((item) => {
                   // Memastikan harga dikonversi ke tipe angka
                   const itemPrice = Number(item.price || 0);
                   
                   return (
-                    <tr key={item.id_product} className="hover:bg-base-200/40">
+                    <tr key={item.id_product} className="hover:bg-base-200/40 border-b border-[#c9a84c]/5">
                       <td>
                         <div className="flex items-center gap-3">
                           <img 
                             src={item.image} 
                             alt={item.product_name} 
-                            className="w-12 h-12 object-cover rounded-md bg-base-200" 
+                            className="w-12 h-12 object-cover rounded-md bg-[#0d0b08] border border-[#c9a84c]/10" 
                           />
                           {/* 4. Menggunakan item.product_name */}
                           <span className="font-semibold text-sm line-clamp-1">{item.product_name}</span>
@@ -161,16 +98,25 @@ export default function Keranjang() {
                       {/* 5. Menggunakan itemPrice dari database */}
                       <td>Rp {itemPrice.toLocaleString("id-ID")}</td>
                       <td>
-                        <div className="flex justify-center items-center gap-1">
-                          <button onClick={() => updateQty(item.id_product, item.qty - 1)} className="btn btn-xs btn-outline">-</button>
-                          <span className="w-8 text-center text-sm font-bold">{item.qty}</span>
-                          <button onClick={() => updateQty(item.id_product, item.qty + 1)} className="btn btn-xs btn-outline">+</button>
+                        <div className="flex justify-center items-center gap-2">
+                          <button 
+                            onClick={() => updateQty(item.id_product, item.qty - 1)} 
+                            className="w-6 h-6 rounded-md border border-[#c9a84c]/30 hover:border-[#c9a84c] flex items-center justify-center text-white/70 hover:text-white transition-colors"
+                          >
+                            <Minus size={12} />
+                          </button>
+                          <span className="w-8 text-center text-sm font-bold font-mono">{item.qty}</span>
+                          <button 
+                            onClick={() => updateQty(item.id_product, item.qty + 1)} 
+                            className="w-6 h-6 rounded-md border border-[#c9a84c]/30 hover:border-[#c9a84c] flex items-center justify-center text-white/70 hover:text-white transition-colors"
+                          >
+                            <Plus size={12} />
+                          </button>
                         </div>
                       </td>
-                      <td className="font-semibold text-primary">Rp {(itemPrice * item.qty).toLocaleString("id-ID")}</td>
-                      <td>
-                        <button onClick={() => removeItem(item.id_product)} className="btn btn-ghost btn-xs text-error">
->>>>>>> 72c10f18e93c636a004982ef69796af07a75a264
+                      <td className="font-semibold text-[#c9a84c]">Rp {(itemPrice * item.qty).toLocaleString("id-ID")}</td>
+                      <td className="text-center">
+                        <button onClick={() => removeItem(item.id_product)} className="btn btn-ghost btn-xs text-error hover:bg-error/10">
                           <Trash2 size={16} />
                         </button>
                       </td>
@@ -207,10 +153,10 @@ export default function Keranjang() {
 
             <button 
               onClick={() => navigate("/customer/checkout")} 
-              className="btn bg-gradient-to-r from-[#c9a84c] to-[#e8c97a] text-[#0d0b08] hover:from-[#e8c97a] hover:to-[#c9a84c] border-none w-full font-bold rounded-xl shadow-lg shadow-[#c9a84c]/10 transition-all duration-300 py-3 flex items-center justify-center gap-2 group"
+              className="w-full bg-gradient-to-r from-[#c9a84c] to-[#e8c97a] text-[#0d0b08] hover:from-[#e8c97a] hover:to-[#c9a84c] font-extrabold rounded-xl shadow-lg shadow-[#c9a84c]/10 transition-all duration-300 py-3.5 flex items-center justify-center gap-2 group uppercase text-xs tracking-wider"
             >
               Lanjutkan ke Prosedur Checkout
-              <ArrowRight size={16} className="transform transition-transform group-hover:translate-x-1 duration-200" />
+              <ArrowRight size={15} className="transform transition-transform group-hover:translate-x-1 duration-200" />
             </button>
           </div>
         </div>
