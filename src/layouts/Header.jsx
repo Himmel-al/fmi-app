@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { MdAdd, MdSearch } from "react-icons/md";
-import { FaBell, FaShoppingCart } from "react-icons/fa";
+import { MdSearch } from "react-icons/md";
+import { FaBell } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "../api/axios";
 
@@ -358,12 +358,6 @@ function timeAgo(dateString) {
   return `${diffDay} hari lalu`;
 }
 
-const CART = [
-  { id:1, emoji:'🛋️', name:'Sofa Premium L-Shape',   qty:1, price:'Rp 8.400.000'  },
-  { id:2, emoji:'🛏️', name:'Ranjang Jati King Size', qty:2, price:'Rp 12.750.000' },
-  { id:3, emoji:'🪑', name:'Kursi Scandinavian Set',  qty:4, price:'Rp 4.200.000'  },
-];
-
 const SUGGESTIONS = [
   { emoji:'🛋️', name:'Sofa Premium L-Shape',   type:'Katalog'  },
   { emoji:'🛏️', name:'Ranjang Jati King Size', type:'Katalog'  },
@@ -382,7 +376,6 @@ export default function Header() {
   const [searchVal,  setSearchVal]  = useState('');
   const [searchFocus, setSearchFocus] = useState(false);
   const [showNotif,  setShowNotif]  = useState(false);
-  const [showCart,   setShowCart]   = useState(false);
   const [showUser,   setShowUser]   = useState(false);
   const [readSet,    setReadSet]    = useState(new Set());
   const [scrolled,   setScrolled]   = useState(false);
@@ -393,7 +386,6 @@ export default function Header() {
   const [notifLoading, setNotifLoading] = useState(true);
 
   const notifRef  = useRef(null);
-  const cartRef   = useRef(null);
   const userRef   = useRef(null);
   const searchRef = useRef(null);
 
@@ -401,7 +393,6 @@ export default function Header() {
   useEffect(() => {
     const h = (e) => {
       if (notifRef.current  && !notifRef.current.contains(e.target))  setShowNotif(false);
-      if (cartRef.current   && !cartRef.current.contains(e.target))   setShowCart(false);
       if (userRef.current   && !userRef.current.contains(e.target))   setShowUser(false);
       if (searchRef.current && !searchRef.current.contains(e.target)) setSearchFocus(false);
     };
@@ -445,7 +436,7 @@ export default function Header() {
   }, []);
 
   /* helpers */
-  const closeAll = () => { setShowNotif(false); setShowCart(false); setShowUser(false); };
+  const closeAll = () => { setShowNotif(false); setShowUser(false); };
   const toggle   = (fn, cur) => { closeAll(); fn(!cur); };
 
   const unread    = notifList.filter(n => !readSet.has(n.id)).length;
@@ -529,43 +520,6 @@ export default function Header() {
         {/* ── 4. RIGHT ACTIONS ── */}
         <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
 
-          {/* ── CART ── */}
-          <div ref={cartRef} style={{ position:'relative' }}>
-            <div className={`hd-icon-btn${showCart ? ' hd-open' : ''}`}
-              onClick={() => toggle(setShowCart, showCart)}>
-              <FaShoppingCart />
-              <span className="hd-badge hd-badge-gold">{CART.length}</span>
-            </div>
-
-            {showCart && (
-              <div className="hd-drop" style={{ width:305 }}>
-                <div className="hd-cd-head">
-                  <span className="hd-cd-title">Keranjang Pesanan</span>
-                  <span className="hd-cd-count">{CART.length} item</span>
-                </div>
-                {CART.map(item => (
-                  <div key={item.id} className="hd-cd-item">
-                    <div className="hd-cd-icon">{item.emoji}</div>
-                    <div style={{ flex:1, minWidth:0 }}>
-                      <div className="hd-cd-name">{item.name}</div>
-                      <div className="hd-cd-price">{item.price}</div>
-                    </div>
-                    <div className="hd-cd-qty">×{item.qty}</div>
-                  </div>
-                ))}
-                <div className="hd-cd-foot">
-                  <div className="hd-cd-total">
-                    <span>Total Estimasi</span>
-                    <span className="hd-cd-total-val">Rp 25.350.000</span>
-                  </div>
-                  <button className="hd-cd-checkout" onClick={() => { setShowCart(false); navigate('/PesananMasuk'); }}>
-                    Proses Pesanan →
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
           {/* ── NOTIFICATIONS ── */}
           <div ref={notifRef} style={{ position:'relative' }}>
             <div className={`hd-icon-btn${showNotif ? ' hd-open' : ''}`}
@@ -620,12 +574,6 @@ export default function Header() {
               </div>
             )}
           </div>
-
-          {/* ── ADD ORDER ── */}
-          <button className="hd-add-btn" onClick={() => navigate('/PesananMasuk')}>
-            <MdAdd style={{ fontSize:16, flexShrink:0 }} />
-            Tambah Pesanan
-          </button>
 
           {/* ── USER AVATAR ── */}
           <div ref={userRef} style={{ position:'relative' }}>
