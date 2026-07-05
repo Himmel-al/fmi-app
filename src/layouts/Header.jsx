@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { MdAdd, MdSearch } from "react-icons/md";
 import { FaBell, FaShoppingCart } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
+import axios from "../api/axios";
 
 const HeaderStyles = () => (
   <style>{`
@@ -208,6 +209,8 @@ const HeaderStyles = () => (
       color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.18s; font-family: 'DM Sans', sans-serif;
     }
     .hd-nd-all:hover { background: rgba(201,168,76,0.07); color: #c9a84c; border-color: rgba(201,168,76,0.2); }
+    .hd-nd-empty { padding: 24px 16px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.25); }
+    .hd-nd-loading { padding: 24px 16px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.25); }
 
     /* ── CART DROPDOWN ── */
     .hd-cd-head {
@@ -330,12 +333,30 @@ const PAGE_TITLES = {
   '/pengaturan':    { title: 'Pengaturan',     sub: 'Konfigurasi Sistem'    },
 };
 
-const NOTIFS = [
-  { id:1, icon:'🛍️', title:'Pesanan baru masuk',      msg:'Order #1042 dari Budi Santoso',    time:'2 mnt lalu',  unread:true  },
-  { id:2, icon:'⚠️', title:'Stok hampir habis',       msg:'Sofa L-Shape tersisa 2 unit',      time:'14 mnt lalu', unread:true  },
-  { id:3, icon:'✅', title:'Pengiriman dikonfirmasi', msg:'Order #1038 berhasil dikirim',      time:'1 jam lalu',  unread:false },
-  { id:4, icon:'🛍️', title:'Pesanan baru masuk',      msg:'Order #1041 — PT. Maju Bersama',   time:'3 jam lalu',  unread:true  },
-];
+// Notifikasi sekarang di-fetch langsung dari API (/api/notifications), lihat useEffect di bawah.
+
+// Icon untuk tiap jenis notifikasi dari backend
+const NOTIF_ICONS = {
+  low_stock:  '⚠️',
+  new_order:  '🛍️',
+  order_done: '✅',
+};
+
+// Ubah timestamp dari backend jadi teks "x menit lalu"
+function timeAgo(dateString) {
+  if (!dateString) return '';
+  const now = new Date();
+  const past = new Date(dateString);
+  const diffSec = Math.floor((now - past) / 1000);
+
+  if (diffSec < 60) return 'Baru saja';
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin} mnt lalu`;
+  const diffHour = Math.floor(diffMin / 60);
+  if (diffHour < 24) return `${diffHour} jam lalu`;
+  const diffDay = Math.floor(diffHour / 24);
+  return `${diffDay} hari lalu`;
+}
 
 const CART = [
   { id:1, emoji:'🛋️', name:'Sofa Premium L-Shape',   qty:1, price:'Rp 8.400.000'  },
@@ -367,6 +388,10 @@ export default function Header() {
   const [scrolled,   setScrolled]   = useState(false);
   const [time,       setTime]       = useState(new Date());
 
+  // Notifikasi asli dari backend
+  const [notifList,    setNotifList]    = useState([]);
+  const [notifLoading, setNotifLoading] = useState(true);
+
   const notifRef  = useRef(null);
   const cartRef   = useRef(null);
   const userRef   = useRef(null);
@@ -397,11 +422,33 @@ export default function Header() {
     return () => clearInterval(t);
   }, []);
 
+  /* ── FETCH NOTIFIKASI ASLI DARI BACKEND ── */
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get('/notifications', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setNotifList(res.data.notifications || []);
+      } catch (err) {
+        console.error('Gagal memuat notifikasi:', err);
+      } finally {
+        setNotifLoading(false);
+      }
+    };
+
+    fetchNotifications();
+    // Refresh otomatis tiap 60 detik biar data selalu update
+    const interval = setInterval(fetchNotifications, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   /* helpers */
   const closeAll = () => { setShowNotif(false); setShowCart(false); setShowUser(false); };
   const toggle   = (fn, cur) => { closeAll(); fn(!cur); };
 
-  const unread    = NOTIFS.filter(n => n.unread && !readSet.has(n.id)).length;
+  const unread    = notifList.filter(n => !readSet.has(n.id)).length;
   const pageInfo  = PAGE_TITLES[location.pathname] || PAGE_TITLES['/dashboard'];
   const filtered  = SUGGESTIONS.filter(s => !searchVal || s.name.toLowerCase().includes(searchVal.toLowerCase()));
 
@@ -538,28 +585,34 @@ export default function Header() {
                   <span className="hd-nd-title">Notifikasi {unread > 0 && `(${unread} baru)`}</span>
                   {unread > 0 && (
                     <button className="hd-nd-mark"
-                      onClick={() => setReadSet(new Set(NOTIFS.map(n => n.id)))}>
+                      onClick={() => setReadSet(new Set(notifList.map(n => n.id)))}>
                       Tandai semua dibaca
                     </button>
                   )}
                 </div>
 
-                {NOTIFS.map(n => {
-                  const isUnread = n.unread && !readSet.has(n.id);
-                  return (
-                    <div key={n.id}
-                      className={`hd-nd-item${isUnread ? ' unread' : ''}`}
-                      onClick={() => setReadSet(prev => new Set([...prev, n.id]))}>
-                      {isUnread && <div className="hd-nd-unread-dot" />}
-                      <div className="hd-nd-icon">{n.icon}</div>
-                      <div style={{ flex:1, minWidth:0 }}>
-                        <div className="hd-nd-name">{n.title}</div>
-                        <div className="hd-nd-msg">{n.msg}</div>
-                        <div className="hd-nd-time">{n.time}</div>
+                {notifLoading ? (
+                  <div className="hd-nd-loading">Memuat notifikasi...</div>
+                ) : notifList.length === 0 ? (
+                  <div className="hd-nd-empty">Tidak ada notifikasi baru 🎉</div>
+                ) : (
+                  notifList.map(n => {
+                    const isUnread = !readSet.has(n.id);
+                    return (
+                      <div key={n.id}
+                        className={`hd-nd-item${isUnread ? ' unread' : ''}`}
+                        onClick={() => setReadSet(prev => new Set([...prev, n.id]))}>
+                        {isUnread && <div className="hd-nd-unread-dot" />}
+                        <div className="hd-nd-icon">{NOTIF_ICONS[n.type] || '🔔'}</div>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div className="hd-nd-name">{n.title}</div>
+                          <div className="hd-nd-msg">{n.description}</div>
+                          <div className="hd-nd-time">{timeAgo(n.time)}</div>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                )}
 
                 <div className="hd-nd-foot">
                   <button className="hd-nd-all">Lihat Semua Notifikasi</button>
