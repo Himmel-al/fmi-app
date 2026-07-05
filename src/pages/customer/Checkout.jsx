@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CreditCard, MapPin, ShoppingBag } from "lucide-react";
+import { CreditCard, MapPin, ShoppingBag, Sparkles, ArrowRight, ShieldCheck } from "lucide-react";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -8,40 +8,50 @@ export default function Checkout() {
   const [alamat, setAlamat] = useState("");
   const [metodeBayar, setMetodeBayar] = useState("transfer");
 
-  // Ambil data keranjang dengan aman dari localStorage saat halaman dimuat
+  // Ambil data keranjang & profil default dari localStorage saat halaman dimuat
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem("cart");
       if (savedCart) {
         setCartItems(JSON.parse(savedCart));
       }
+      
+      // Mengambil alamat default secara otomatis jika user sudah menyimpannya di profil
+      const savedProfile = JSON.parse(localStorage.getItem("customerProfile"));
+      if (savedProfile && savedProfile.alamat) {
+        setAlamat(savedProfile.alamat);
+      }
     } catch (error) {
-      console.error("Gagal memuat data keranjang:", error);
+      console.error("Gagal memuat data pendukung checkout:", error);
     }
   }, []);
 
-  // Hitung total belanjaan
-  const totalHarga = cartItems.reduce((sum, item) => sum + (item.harga * (item.kuantitas || 1)), 0);
+  // Hitung total belanjaan dengan fallback property (harga/price dan qty/kuantitas)
+  const totalHarga = cartItems.reduce((sum, item) => {
+    const itemPrice = item.price || item.harga || 0;
+    const itemQty = item.qty || item.kuantitas || 1;
+    return sum + (itemPrice * itemQty);
+  }, 0);
 
   const handleBuatPesanan = (e) => {
     e.preventDefault();
     if (!alamat.trim()) {
-      alert("Silakan isi alamat pengiriman terlebih dahulu!");
+      alert("Silakan tentukan alamat pengiriman premium Anda terlebih dahulu!");
       return;
     }
 
     try {
-      // 1. Ambil data pesanan terdahulu dari localStorage (jika ada)
       const existingOrders = JSON.parse(localStorage.getItem("orders")) || [];
+      const savedProfile = JSON.parse(localStorage.getItem("customerProfile"));
 
-      // 2. Buat objek transaksi baru dengan mencocokkan struktur data RiwayatPesanan & Admin
+      // Buat objek transaksi baru yang sinkron dengan struktur database & halaman riwayat
       const newOrder = {
-        id: Date.now().toString().slice(-5), // Membuat 5 digit ID acak yang unik
+        id: Date.now().toString().slice(-5), 
         tanggal: new Date().toLocaleDateString("id-ID"),
-        customer: "Pelanggan Umum", // Bisa disesuaikan jika ada sistem auth nama user
+        customer: savedProfile?.nama || "Premium Client", 
         items: cartItems.map((item) => ({
-          nama: item.nama,
-          qty: item.kuantitas || 1, 
+          product_name: item.product_name || item.nama,
+          qty: item.qty || item.kuantitas || 1, 
         })),
         total: totalHarga,
         alamat: alamat,
@@ -49,126 +59,178 @@ export default function Checkout() {
         status: "Diproses",
       };
 
-      // 3. Gabungkan data baru ke baris paling atas
       const updatedOrders = [newOrder, ...existingOrders];
       localStorage.setItem("orders", JSON.stringify(updatedOrders));
 
-      // 4. Bersihkan isi keranjang belanja setelah checkout berhasil
+      // Bersihkan isi keranjang belanja dan trigger pembaruan badge navbar layout
       localStorage.removeItem("cart");
+      window.dispatchEvent(new Event("storage"));
 
-      // Tampilkan informasi rekening Mandiri jika memilih metode transfer
       if (metodeBayar === "transfer") {
         alert(
-          `Pesanan Berhasil Dibuat!\n\nSilakan transfer sebesar Rp ${totalHarga.toLocaleString("id-ID")} ke:\nBank Mandiri: 123-00-998877-6\na/n PT SIPP Perabotan\n\nDetail rekening dapat Anda lihat kembali di halaman Riwayat Pesanan.`
+          `Pesanan Berhasil Diamankan!\n\nSilakan mentransfer dana investasi sebesar Rp ${totalHarga.toLocaleString("id-ID")} ke:\nBank Mandiri Vault: 123-00-998877-6\na/n PT SIPP Perabotan\n\nDetail rekening dapat Anda akses setiap saat pada menu Riwayat Pesanan.`
         );
       } else {
-        alert("Pesanan Anda (COD) berhasil dibuat!");
+        alert("Pesanan dengan metode COD Premium Anda berhasil dijadwalkan!");
       }
       
-      // 5. Mengarahkan rute ke halaman riwayat pesanan
       navigate("/customer/pesanan");
     } catch (error) {
       console.error("Gagal memproses pesanan:", error);
-      alert("Terjadi masalah saat menyimpan pesanan.");
+      alert("Terjadi kendala teknis saat mengamankan pesanan Anda.");
     }
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-8 max-w-6xl min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-base-content flex items-center gap-2">
-        <ShoppingBag className="text-primary" /> Formulir Checkout
-      </h1>
+    <div className="container mx-auto text-white space-y-8 relative max-w-6xl">
+      
+      {/* HEADER UTAMA */}
+      <div className="border-b border-[#c9a84c]/20 pb-5">
+        <div className="flex items-center gap-2 text-[#c9a84c] mb-1">
+          <ShieldCheck size={14} className="animate-pulse" />
+          <span className="text-[10px] tracking-[0.3em] font-bold uppercase">Secure Premium Checkout</span>
+        </div>
+        <h1 className="text-3xl font-bold font-serif tracking-wide text-white flex items-center gap-3">
+          <ShoppingBag className="text-[#c9a84c]" size={28} />
+          Formulir <span className="text-[#c9a84c]">Pemesanan</span>
+        </h1>
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* KIRI: Alamat & Pembayaran */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        
+        {/* KOLOM KIRI: ALAMAT & METODE PEMBAYARAN */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Form Alamat */}
-          <div className="card bg-base-100 shadow-md border border-base-200 p-6 rounded-2xl">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <MapPin size={20} className="text-error" /> Alamat Pengiriman
+          
+          {/* SEKSI 1: ALAMAT PENGIRIMAN */}
+          <div className="rounded-2xl bg-[#1a1610]/80 border border-[#c9a84c]/10 shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-6 backdrop-blur-xl transition-all hover:border-[#c9a84c]/30">
+            <h2 className="text-lg font-bold font-serif mb-4 flex items-center gap-2 text-white">
+              <MapPin size={18} className="text-[#c9a84c]" /> Destinasi Pengiriman Perabot
             </h2>
             <textarea
-              className="textarea textarea-bordered w-full h-24 focus:textarea-primary"
-              placeholder="Tuliskan alamat lengkap pengiriman rumah Anda..."
+              className="textarea w-full bg-[#0d0b08] text-white border border-[#c9a84c]/20 rounded-xl focus:border-[#c9a84c] focus:outline-none text-sm p-4 h-28 transition-all resize-none placeholder:text-white/20"
+              placeholder="Tuliskan alamat lengkap pengiriman properti atau kediaman Anda..."
               value={alamat}
               onChange={(e) => setAlamat(e.target.value)}
               required
             />
+            <p className="text-[10px] text-white/40 mt-2 italic">*Jika Anda sudah mengisi alamat di menu Profil, kolom ini akan terisi otomatis.</p>
           </div>
 
-          {/* Metode Pembayaran */}
-          <div className="card bg-base-100 shadow-md border border-base-200 p-6 rounded-2xl">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <CreditCard size={20} className="text-success" /> Metode Pembayaran
+          {/* SEKSI 2: METODE PEMBAYARAN */}
+          <div className="rounded-2xl bg-[#1a1610]/80 border border-[#c9a84c]/10 shadow-[0_12px_40px_rgba(0,0,0,0.4)] p-6 backdrop-blur-xl transition-all hover:border-[#c9a84c]/30">
+            <h2 className="text-lg font-bold font-serif mb-4 flex items-center gap-2 text-white">
+              <CreditCard size={18} className="text-[#c9a84c]" /> Metode Proteksi Pembayaran
             </h2>
-            <div className="form-control">
-              <label className="label cursor-pointer justify-start gap-4 p-3 border rounded-xl mb-2 hover:bg-base-200/50">
+            <div className="form-control space-y-3">
+              
+              {/* OPSI TRANSFER */}
+              <label 
+                onClick={() => setMetodeBayar("transfer")}
+                className={`flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-all ${
+                  metodeBayar === "transfer" 
+                    ? "bg-[#c9a84c]/5 border-[#c9a84c] text-white" 
+                    : "bg-[#0d0b08] border-[#c9a84c]/10 text-white/60 hover:border-[#c9a84c]/30"
+                }`}
+              >
                 <input
                   type="radio"
                   name="payment"
-                  className="radio radio-primary"
+                  className="radio border-[#c9a84c]/40 checked:bg-[#c9a84c] checked:border-[#c9a84c]"
                   checked={metodeBayar === "transfer"}
-                  onChange={() => setMetodeBayar("transfer")}
+                  onChange={() => {}}
                 />
-                <span className="label-text font-medium">Transfer Bank (Manual)</span>
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold">Transfer Bank (Verifikasi Manual Vault)</span>
+                  <span className="text-xs text-white/40 mt-0.5">Sistem memunculkan nomor rekening eksklusif Mandiri setelah pemesanan dikonfirmasi.</span>
+                </div>
               </label>
-              <label className="label cursor-pointer justify-start gap-4 p-3 border rounded-xl hover:bg-base-200/50">
+
+              {/* OPSI COD */}
+              <label 
+                onClick={() => setMetodeBayar("cod")}
+                className={`flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-all ${
+                  metodeBayar === "cod" 
+                    ? "bg-[#c9a84c]/5 border-[#c9a84c] text-white" 
+                    : "bg-[#0d0b08] border-[#c9a84c]/10 text-white/60 hover:border-[#c9a84c]/30"
+                }`}
+              >
                 <input
                   type="radio"
                   name="payment"
-                  className="radio radio-primary"
+                  className="radio border-[#c9a84c]/40 checked:bg-[#c9a84c] checked:border-[#c9a84c]"
                   checked={metodeBayar === "cod"}
-                  onChange={() => setMetodeBayar("cod")}
+                  onChange={() => {}}
                 />
-                <span className="label-text font-medium">Bayar di Tempat (COD)</span>
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold">Cash On Delivery (Premium COD)</span>
+                  <span className="text-xs text-white/40 mt-0.5">Lakukan pelunasan tunai langsung di tempat saat armada logistik internal kami tiba di lokasi Anda.</span>
+                </div>
               </label>
+
             </div>
           </div>
         </div>
 
-        {/* KANAN: Ringkasan Pesanan */}
-        <div className="card bg-base-100 shadow-md border border-base-200 p-6 rounded-2xl h-fit">
-          <h2 className="text-xl font-bold mb-4">Ringkasan Pesanan</h2>
+        {/* KOLOM KANAN: RINGKASAN PRODUK & TOTAL INVESTASI */}
+        <div className="rounded-2xl bg-[#1a1610] border border-[#c9a84c]/20 shadow-[0_12px_40px_rgba(0,0,0,0.5)] p-6 space-y-6 backdrop-blur-xl sticky top-28">
+          <h2 className="text-lg font-bold font-serif text-white tracking-wide border-b border-[#c9a84c]/10 pb-3">
+            Ringkasan Manifestasi
+          </h2>
           
-          <div className="divide-y divide-base-200 max-h-60 overflow-y-auto mb-4 pr-2">
+          {/* LIST ITEM DAFTAR BELANJA */}
+          <div className="divide-y divide-[#c9a84c]/10 max-h-52 overflow-y-auto mb-4 pr-1 scrollbar-thin scrollbar-thumb-[#c9a84c]/20">
             {cartItems.length === 0 ? (
-              <p className="text-sm text-base-content/60 py-2">Tidak ada produk dalam keranjang.</p>
+              <p className="text-xs text-white/40 py-4 italic text-center">Tidak ada produk eksklusif di keranjang.</p>
             ) : (
-              cartItems.map((item) => (
-                <div key={item.id} className="flex justify-between py-3 text-sm">
-                  <div>
-                    <p className="font-semibold text-base-content line-clamp-1">{item.nama}</p>
-                    <p className="text-xs text-base-content/60">{item.kuantitas || 1}x @ Rp {item.harga?.toLocaleString("id-ID")}</p>
+              cartItems.map((item, idx) => {
+                const itemPrice = item.price || item.harga || 0;
+                const itemQty = item.qty || item.kuantitas || 1;
+                const itemName = item.product_name || item.nama;
+
+                return (
+                  <div key={item.id_product || idx} className="flex justify-between items-start py-3.5 text-sm group">
+                    <div className="max-w-[70%]">
+                      <p className="font-medium text-white group-hover:text-[#c9a84c] transition-colors line-clamp-1">{itemName}</p>
+                      <p className="text-xs text-white/40 font-mono mt-0.5">{itemQty}x @ Rp {itemPrice.toLocaleString("id-ID")}</p>
+                    </div>
+                    <p className="font-bold text-white/90 text-xs font-mono pt-1">Rp {(itemPrice * itemQty).toLocaleString("id-ID")}</p>
                   </div>
-                  <p className="font-medium">Rp {((item.harga || 0) * (item.kuantitas || 1)).toLocaleString("id-ID")}</p>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
 
-          <div className="border-t pt-4 space-y-2 mb-6">
-            <div className="flex justify-between text-base-content/70">
-              <span>Subtotal</span>
-              <span>Rp {totalHarga.toLocaleString("id-ID")}</span>
+          {/* TOTAL CALCULATION RINCIAN */}
+          <div className="border-t border-[#c9a84c]/10 pt-4 space-y-3">
+            <div className="flex justify-between text-xs tracking-wide text-white/60">
+              <span>Subtotal Produk</span>
+              <span className="font-mono">Rp {totalHarga.toLocaleString("id-ID")}</span>
             </div>
-            <div className="flex justify-between text-base-content/70">
-              <span>Biaya Pengiriman</span>
-              <span className="text-success font-medium">Gratis</span>
+            <div className="flex justify-between text-xs tracking-wide text-white/60">
+              <span>Proteksi & Pengiriman</span>
+              <span className="text-emerald-400 font-bold uppercase tracking-wider text-[10px]">Complimentary</span>
             </div>
-            <div className="flex justify-between font-extrabold text-lg pt-2 border-t border-dashed">
-              <span>Total Harga</span>
-              <span className="text-primary">Rp {totalHarga.toLocaleString("id-ID")}</span>
+            
+            <div className="flex justify-between items-center pt-3 border-t border-dashed border-[#c9a84c]/20">
+              <span className="text-sm font-serif font-medium text-white/90">Total Investasi</span>
+              <span className="text-xl font-bold text-[#c9a84c] font-mono tracking-tight">
+                Rp {totalHarga.toLocaleString("id-ID")}
+              </span>
             </div>
           </div>
 
+          {/* TOMBOL AKSI SUBMIT */}
           <button 
             onClick={handleBuatPesanan}
-            className="btn btn-primary w-full rounded-xl shadow-md text-white font-bold"
+            className="btn bg-gradient-to-r from-[#c9a84c] to-[#e8c97a] text-[#0d0b08] hover:from-[#e8c97a] hover:to-[#c9a84c] border-none w-full font-bold rounded-xl shadow-lg shadow-[#c9a84c]/10 transition-all duration-300 py-3 flex items-center justify-center gap-2 group disabled:opacity-30 disabled:pointer-events-none"
             disabled={cartItems.length === 0}
           >
-            Selesaikan Pemesanan
+            <Sparkles size={14} className="animate-pulse" />
+            Amankan & Selesaikan Pesanan
+            <ArrowRight size={15} className="transform transition-transform group-hover:translate-x-0.5 duration-200" />
           </button>
         </div>
+
       </div>
     </div>
   );
