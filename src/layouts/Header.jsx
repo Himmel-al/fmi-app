@@ -3,9 +3,6 @@ import { MdAdd, MdSearch } from "react-icons/md";
 import { FaBell, FaShoppingCart } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 
-/* ═══════════════════════════════════════════════════
-   INJECTED STYLES  — fully self-contained, no Tailwind needed
-═══════════════════════════════════════════════════ */
 const HeaderStyles = () => (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap');

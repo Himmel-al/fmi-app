@@ -22,10 +22,8 @@ const StockGudang = lazy(() => import("./pages/StockGudang"));
 const Analitik = lazy(() => import("./pages/Analitik"));
 const Pengaturan = lazy(() => import("./pages/Pengaturan"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
-const GuestPage = lazy(() => import("./pages/guest/GuestPage"));
-const CustomerRoute = lazy(() => import("./components/CustomerRoute"))
-const AdminRoute = lazy(() => import("./components/AdminRoute"))
-
+const CustomerRoute = lazy(() => import("./components/CustomerRoute"));
+const AdminRoute = lazy(() => import("./components/AdminRoute"));
 
 const CustomerLayout = lazy(() => import("./layouts/CustomerLayout"));
 
@@ -34,12 +32,13 @@ const DashboardCustomer = lazy(
 );
 
 const ProdukCustomer = lazy(() => import("./pages/customer/ProdukCustomer"));
-
 const Keranjang = lazy(() => import("./pages/customer/Keranjang"));
-
 const RiwayatPesanan = lazy(() => import("./pages/customer/RiwayatPesanan"));
-
 const ProfilCustomer = lazy(() => import("./pages/customer/ProfilCustomer"));
+
+// ── TAMBAHAN IMPORT FITUR BARU CUSTOMER ──
+const Checkout = lazy(() => import("./pages/customer/Checkout"));
+const DetailProdukCustomer = lazy(() => import("./pages/customer/DetailProdukCustomer"));
 
 function LoadingScreen() {
   return (
@@ -73,38 +72,38 @@ function LoadingScreen() {
 function App() {
   return (
     <Suspense fallback={<LoadingScreen />}>
-      {" "}
       <Routes>
+        {/* Guest / Umum (Sudah dihapus /guest karena filenya tidak ada) */}
         <Route element={<GuestLayout />}>
-          {/* Ketika akses http://localhost:5173/ maka LandingPage yang akan muncul */}
           <Route path="/" element={<LandingPage />} />
-          <Route path="/guest" element={<GuestPage />} />
         </Route>
 
+        {/* Autentikasi */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<Forgot />} />
         </Route>
 
+        {/* Rute Khusus Customer */}
         <Route element={<CustomerRoute />}>
           <Route element={<CustomerLayout />}>
             <Route path="/customer" element={<DashboardCustomer />} />
-
             <Route path="/customer/produk" element={<ProdukCustomer />} />
-
             <Route path="/customer/keranjang" element={<Keranjang />} />
-
             <Route path="/customer/pesanan" element={<RiwayatPesanan />} />
-
             <Route path="/customer/profil" element={<ProfilCustomer />} />
+            
+            {/* ── MENAMBAHKAN RUTE BARU DI SINI ── */}
+            <Route path="/customer/checkout" element={<Checkout />} />
+            <Route path="/customer/produk/:id" element={<DetailProdukCustomer />} />
           </Route>
         </Route>
 
+        {/* Rute Khusus Admin */}
         <Route element={<AdminRoute />}>
           <Route element={<ProtectedRoute />}>
             <Route element={<AppLayout />}>
-              {/* Mengubah path Dashboard menjadi /dashboard agar tidak bentrok dengan LandingPage */}
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/katalogproduk" element={<KatalogProduk />} />
               <Route path="/pesananmasuk" element={<PesananMasuk />} />

@@ -1,65 +1,51 @@
+import { useState, useEffect } from "react";
 import React from "react";
 import PageHeader from "../components/PageHeader";
 
 export default function PesananMasuk() {
-  // Data dummy (sementara) untuk tabel pesanan
-  const orders = [
-    {
-      id: "#ORD-2850",
-      date: "15 Mei 2026",
-      customer: "Budi Santoso",
-      product: "Sofa L-Shape (1)",
-      total: "Rp 8.5M",
-      payment: "Transfer Bank",
-      status: "Selesai",
-      statusColor:
-        "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20",
-    },
-    {
-      id: "#ORD-2849",
-      date: "15 Mei 2026",
-      customer: "Siti Rahma",
-      product: "Meja Makan (2)",
-      total: "Rp 6.4M",
-      payment: "E-Wallet",
-      status: "Sedang Diproses",
-      statusColor: "bg-blue-500/10 text-blue-500 border border-blue-500/20",
-    },
-    {
-      id: "#ORD-2848",
-      date: "14 Mei 2026",
-      customer: "Andi Setiawan",
-      product: "Lemari 4 Pintu (1)",
-      total: "Rp 5.4M",
-      payment: "COD",
-      status: "Menunggu Pembayaran",
-      statusColor: "bg-amber-500/10 text-amber-500 border border-amber-500/20",
-    },
-    {
-      id: "#ORD-2847",
-      date: "14 Mei 2026",
-      customer: "Rina Kartika",
-      product: "Kursi Kerja (1)",
-      total: "Rp 2.1M",
-      payment: "Transfer Bank",
-      status: "Selesai",
-      statusColor:
-        "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20",
-    },
-    {
-      id: "#ORD-2846",
-      date: "13 Mei 2026",
-      customer: "Adi Pradana",
-      product: "Meja Makan (1), Lemari (1)",
-      total: "Rp 9.6M",
-      payment: "Transfer Bank",
-      status: "Dibatalkan",
-      statusColor: "bg-red-500/10 text-red-500 border border-red-500/20",
-    },
-  ];
+  const [orders, setOrders] = useState([]);
+
+  // Ambil data real dari localStorage pembeli saat komponen dimuat
+  useEffect(() => {
+    const storedOrders = JSON.parse(localStorage.getItem("orders")) || [];
+    setOrders(storedOrders);
+  }, []);
+
+  // Fungsi untuk memperbarui status pesanan dari admin
+  const handleUpdateStatus = (orderId, newStatus) => {
+    const updatedOrders = orders.map((order) => {
+      if (order.id === orderId) {
+        return { ...order, status: newStatus };
+      }
+      return order;
+    });
+
+    setOrders(updatedOrders);
+    localStorage.setItem("orders", JSON.stringify(updatedOrders));
+    alert(`Status pesanan #TRX-${orderId} berhasil diubah menjadi: ${newStatus}`);
+  };
+
+  // Fungsi utilitas helper pewarnaan status di dashboard admin
+  const getStatusStyles = (status) => {
+    switch (status) {
+      case "Selesai":
+        return "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+      case "Gagal":
+        return "bg-red-500/10 text-red-400 border border-red-500/20";
+      case "Diproses":
+      default:
+        return "bg-amber-500/10 text-amber-400 border border-amber-500/20";
+    }
+  };
+
+  // Hitung metrik dinamis berdasarkan data lokal real
+  const countTotal = orders.length;
+  const countDiproses = orders.filter((o) => o.status === "Diproses").length;
+  const countSelesai = orders.filter((o) => o.status === "Selesai").length;
+  const countGagal = orders.filter((o) => o.status === "Gagal").length;
 
   return (
-    <div className="text-white min-h-screen">
+    <div className="text-white min-h-screen bg-[#14151a]">
       <PageHeader
         title="Pesanan Masuk"
         breadcrumb={[{ label: "Dashboard" }, { label: "Pesanan Masuk" }]}
@@ -68,14 +54,14 @@ export default function PesananMasuk() {
       />
 
       <div className="p-6 md:p-8">
-        {/* --- 4 Kartu Ringkasan Atas --- */}
+        {/* --- 4 Kartu Ringkasan Atas (Dinamis) --- */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div className="bg-[#1a1c23] p-5 rounded-xl border border-gray-800 flex items-center gap-4 shadow-sm">
             <div className="bg-emerald-500/20 p-3 rounded-xl flex items-center justify-center h-12 w-12">
               <span className="text-emerald-500 text-xl">🛒</span>
             </div>
             <div>
-              <h3 className="text-2xl font-bold">58</h3>
+              <h3 className="text-2xl font-bold">{countTotal}</h3>
               <p className="text-gray-400 text-sm">Total Pesanan Masuk</p>
             </div>
           </div>
@@ -85,18 +71,18 @@ export default function PesananMasuk() {
               <span className="text-blue-500 text-xl">⏳</span>
             </div>
             <div>
-              <h3 className="text-2xl font-bold">32</h3>
+              <h3 className="text-2xl font-bold">{countDiproses}</h3>
               <p className="text-gray-400 text-sm">Sedang Diproses</p>
             </div>
           </div>
 
           <div className="bg-[#1a1c23] p-5 rounded-xl border border-gray-800 flex items-center gap-4 shadow-sm">
             <div className="bg-amber-500/20 p-3 rounded-xl flex items-center justify-center h-12 w-12">
-              <span className="text-amber-500 text-xl">💳</span>
+              <span className="text-amber-500 text-xl">✅</span>
             </div>
             <div>
-              <h3 className="text-2xl font-bold">15</h3>
-              <p className="text-gray-400 text-sm">Menunggu Pembayaran</p>
+              <h3 className="text-2xl font-bold">{countSelesai}</h3>
+              <p className="text-gray-400 text-sm">Pesanan Selesai</p>
             </div>
           </div>
 
@@ -105,39 +91,9 @@ export default function PesananMasuk() {
               <span className="text-red-500 text-xl">✖</span>
             </div>
             <div>
-              <h3 className="text-2xl font-bold">11</h3>
-              <p className="text-gray-400 text-sm">Dibatalkan</p>
+              <h3 className="text-2xl font-bold">{countGagal}</h3>
+              <p className="text-gray-400 text-sm">Pesanan Gagal</p>
             </div>
-          </div>
-        </div>
-
-        {/* --- Baris Filter & Search --- */}
-        <div className="bg-[#1a1c23] p-4 rounded-xl border border-gray-800 mb-6 flex flex-wrap justify-between items-center gap-4">
-          <div className="flex items-center bg-[#14151a] border border-gray-700 rounded-lg overflow-hidden w-full md:w-auto md:min-w-[300px]">
-            <span className="pl-3 text-gray-500">🔍</span>
-            <input
-              type="text"
-              placeholder="Cari Pesanan (ID, Pelanggan...)"
-              className="bg-transparent text-sm text-gray-200 p-2.5 w-full focus:outline-none"
-            />
-          </div>
-
-          <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0">
-            <button className="px-4 py-2 rounded-lg border border-orange-500 text-orange-500 bg-orange-500/10 text-sm whitespace-nowrap transition-colors">
-              Semua
-            </button>
-            <button className="px-4 py-2 rounded-lg border border-gray-700 text-gray-400 hover:bg-gray-800 text-sm whitespace-nowrap transition-colors">
-              Diproses
-            </button>
-            <button className="px-4 py-2 rounded-lg border border-gray-700 text-gray-400 hover:bg-gray-800 text-sm whitespace-nowrap transition-colors">
-              Menunggu Pembayaran
-            </button>
-            <button className="px-4 py-2 rounded-lg border border-gray-700 text-gray-400 hover:bg-gray-800 text-sm whitespace-nowrap transition-colors">
-              Selesai
-            </button>
-            <button className="px-4 py-2 rounded-lg border border-gray-700 text-gray-400 hover:bg-gray-800 text-sm whitespace-nowrap transition-colors">
-              Dibatalkan
-            </button>
           </div>
         </div>
 
@@ -154,42 +110,73 @@ export default function PesananMasuk() {
                   <th className="p-4 font-medium">Total Bayar</th>
                   <th className="p-4 font-medium">Pembayaran</th>
                   <th className="p-4 font-medium">Status</th>
-                  <th className="p-4 font-medium text-center">Aksi</th>
+                  <th className="p-4 font-medium text-center">Aksi Konfirmasi Admin</th>
                 </tr>
               </thead>
               <tbody className="text-sm">
-                {orders.map((order, index) => (
-                  <tr
-                    key={index}
-                    className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors"
-                  >
-                    <td className="p-4 text-orange-500 font-semibold">
-                      {order.id}
-                    </td>
-                    <td className="p-4 text-gray-300">{order.date}</td>
-                    <td className="p-4 text-gray-300">{order.customer}</td>
-                    <td className="p-4 text-gray-400">{order.product}</td>
-                    <td className="p-4 text-gray-200 font-medium">
-                      {order.total}
-                    </td>
-                    <td className="p-4 text-gray-400">{order.payment}</td>
-                    <td className="p-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${order.statusColor}`}
-                      >
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="p-4 flex justify-center gap-2">
-                      <button className="px-3 py-1.5 border border-gray-600 text-gray-300 rounded hover:bg-gray-700 flex items-center gap-1 transition-colors">
-                        📄 Detail
-                      </button>
-                      <button className="px-3 py-1.5 border border-orange-500/50 text-orange-500 rounded hover:bg-orange-500/10 flex items-center gap-1 transition-colors">
-                        🖨️ Invois
-                      </button>
+                {orders.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" className="text-center p-8 text-gray-500">
+                      Belum ada order masuk dari customer.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  orders.map((order) => (
+                    <tr
+                      key={order.id}
+                      className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors"
+                    >
+                      <td className="p-4 text-orange-500 font-semibold">
+                        #TRX-{order.id}
+                      </td>
+                      <td className="p-4 text-gray-300">{order.tanggal}</td>
+                      <td className="p-4 text-gray-300">{order.customer}</td>
+                      <td className="p-4 text-gray-400">
+                        <div className="max-w-xs space-y-0.5 truncate">
+                          {order.items?.map((item, i) => (
+                            <span key={i} className="block text-xs">
+                              • {item.nama} ({item.qty}x)
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="p-4 text-gray-200 font-medium">
+                        Rp {order.total.toLocaleString("id-ID")}
+                      </td>
+                      <td className="p-4 text-gray-400 uppercase text-xs font-bold">
+                        {order.metodeBayar === "transfer" ? "💳 Transfer" : "🚚 COD"}
+                      </td>
+                      <td className="p-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyles(order.status)}`}>
+                          {order.status}
+                        </span>
+                      </td>
+                      <td className="p-4 flex justify-center gap-1">
+                        <button
+                          onClick={() => handleUpdateStatus(order.id, "Diproses")}
+                          className="px-2.5 py-1 text-xs bg-amber-500 text-black font-semibold rounded hover:bg-amber-400 disabled:opacity-40 transition-all"
+                          disabled={order.status === "Diproses"}
+                        >
+                          Proses
+                        </button>
+                        <button
+                          onClick={() => handleUpdateStatus(order.id, "Selesai")}
+                          className="px-2.5 py-1 text-xs bg-emerald-500 text-black font-semibold rounded hover:bg-emerald-400 disabled:opacity-40 transition-all"
+                          disabled={order.status === "Selesai"}
+                        >
+                          Selesai
+                        </button>
+                        <button
+                          onClick={() => handleUpdateStatus(order.id, "Gagal")}
+                          className="px-2.5 py-1 text-xs bg-red-600 text-white font-semibold rounded hover:bg-red-500 disabled:opacity-40 transition-all"
+                          disabled={order.status === "Gagal"}
+                        >
+                          Gagal
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
