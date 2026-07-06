@@ -8,21 +8,27 @@ import {
   ArrowUpRight, 
   ShieldCheck, 
   Truck, 
-  Zap 
+  Zap,
+  ChevronLeft,
+  ChevronRight 
 } from "lucide-react";
 
 export default function DashboardCustomer() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
 
-  // 1. Mengambil data produk terlaris/unggulan langsung dari API Laravel
+  // ── STATE UNTUK PAGINATION ──
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3; // Menampilkan 3 produk per halaman agar pas di baris pertama
+
+  // 1. Mengambil data produk langsung dari API Laravel
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get("/products");
-        // Jika data dari Laravel dibungkus dlm objek 'data' atau 'products', sesuaikan penangkapannya
         const data = response.data.products || response.data;
-        setProducts(data);
+        // Pastikan yang di-set selalu berbentuk array
+        setProducts(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Gagal memuat produk unggulan:", error);
       }
@@ -45,16 +51,31 @@ export default function DashboardCustomer() {
     }
     
     localStorage.setItem("cart", JSON.stringify(currentCart));
-    
-    // Memicu sinkronisasi angka di keranjang navbar secara realtime
     window.dispatchEvent(new Event("storage"));
-    
     alert(`${productName} berhasil masuk keranjang!`);
   };
 
+  // ── LOGIKA MATEMATIKA PAGINATION ──
+  const indexOfLastProduct = currentPage * itemsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
+  
+  // Mengamankan pemotongan array jika data belum siap
+  const safeProducts = Array.isArray(products) ? products : [];
+  const currentProducts = safeProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  
+  // Hitung total halaman dengan pengaman (minimal 1 agar Array.from tidak crash jika 0)
+  const totalPages = Math.ceil(safeProducts.length / itemsPerPage) || 1;
+
+  const paginate = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+      document.getElementById("produk-section")?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
-    <div className="space-y-16 pb-12 text-[#faf7f0] relative">
-      {/* ── AMBIENT GLOW EFFECTS (FUTURISTIC ORB) ── */}
+    <div className="space-y-16 pb-24 text-[#faf7f0] relative min-h-screen">
+      {/* ── AMBIENT GLOW EFFECTS ── */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#c9a84c]/5 rounded-full filter blur-[100px] pointer-events-none" />
       <div className="absolute top-1/3 left-10 w-72 h-72 bg-[#c9a84c]/3 rounded-full filter blur-[80px] pointer-events-none" />
 
@@ -64,8 +85,6 @@ export default function DashboardCustomer() {
         style={{ backgroundImage: `url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80')` }}
       >
         <div className="hero-overlay bg-gradient-to-r from-[#0d0b08]/95 via-[#0d0b08]/80 to-transparent"></div>
-        
-        {/* Decorative Lines Overlay mimicking theme */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(201,168,76,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(201,168,76,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
 
         <div className="hero-content justify-start text-left px-8 md:px-16 relative z-10">
@@ -95,7 +114,7 @@ export default function DashboardCustomer() {
         </div>
       </div>
 
-      {/* ── DYNAMIC VALUE PROPOSITION MARQUEE BAR ── */}
+      {/* ── DYNAMIC VALUE PROPOSITION BAR ── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-[#1a1610] p-6 rounded-2xl border border-[#c9a84c]/10">
         <div className="flex items-center gap-4 px-4">
           <div className="p-3 rounded-xl bg-[#c9a84c]/10 text-[#c9a84c]"><ShieldCheck size={24} /></div>
@@ -155,7 +174,7 @@ export default function DashboardCustomer() {
       </section>
 
       {/* ── PRODUK UNGGULAN TERLARIS ── */}
-      <section>
+      <section id="produk-section" className="relative z-10 w-full">
         <div className="flex justify-between items-end mb-8">
           <div className="flex flex-col">
             <span className="text-xs font-bold uppercase tracking-widest text-[#c9a84c] mb-1">Koleksi Teratas</span>
@@ -170,14 +189,14 @@ export default function DashboardCustomer() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {products.length === 0 ? (
+        {/* Grid Menampilkan currentProducts */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+          {currentProducts.length === 0 ? (
             <div className="col-span-full text-center text-white/40 py-12 bg-[#1a1610] rounded-2xl border border-[#c9a84c]/10 animate-pulse">
               Sedang memuat mahakarya pilihan...
             </div>
           ) : (
-            // Mengambil 4 produk teratas yang didapatkan dari API Laravel
-            products.slice(0, 4).map((product) => (
+            currentProducts.map((product) => (
               <ProductCard 
                 key={product.id_product || product.id} 
                 product={product} 
@@ -186,11 +205,46 @@ export default function DashboardCustomer() {
             ))
           )}
         </div>
+
+        {/* ── SEKSI TOMBOL NAVIGASI PAGINATION ── */}
+        <div className="flex justify-center items-center gap-3 py-8 my-4 border-t border-[#c9a84c]/10 relative z-30 block clear-both">
+          {/* Tombol Previous */}
+          <button
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="p-2.5 rounded-lg border border-[#c9a84c]/20 bg-[#1a1610] text-[#c9a84c] hover:bg-[#c9a84c] hover:text-[#0d0b08] disabled:opacity-20 disabled:pointer-events-none transition-all duration-300"
+          >
+            <ChevronLeft size={18} />
+          </button>
+
+          {/* Angka Halaman */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => paginate(page)}
+              className={`w-10 h-10 rounded-lg text-sm font-bold transition-all duration-300 border ${
+                currentPage === page
+                  ? "bg-[#c9a84c] text-[#0d0b08] border-[#c9a84c] shadow-[0_0_15px_rgba(201,168,76,0.3)]"
+                  : "bg-[#1a1610] text-white/70 border-[#c9a84c]/20 hover:border-[#c9a84c]/60 hover:text-white"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+
+          {/* Tombol Next */}
+          <button
+            onClick={() => paginate(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="p-2.5 rounded-lg border border-[#c9a84c]/20 bg-[#1a1610] text-[#c9a84c] hover:bg-[#c9a84c] hover:text-[#0d0b08] disabled:opacity-20 disabled:pointer-events-none transition-all duration-300"
+          >
+            <ChevronRight size={18} />
+          </button>
+        </div>
       </section>
 
-      {/* ── EXCLUSIVE PROMO BANNER (FLASH SALE LUXE) ── */}
-      <div className="relative rounded-[24px] bg-gradient-to-r from-[#2a2218] via-[#1a1610] to-[#0d0b08] p-8 md:p-10 border border-[#c9a84c]/20 shadow-2xl overflow-hidden flex flex-col md:flex-row justify-between items-center gap-6">
-        {/* Subtle background decoration patterns */}
+      {/* ── EXCLUSIVE PROMO BANNER ── */}
+      <div className="relative rounded-[24px] bg-gradient-to-r from-[#2a2218] via-[#1a1610] to-[#0d0b08] p-8 md:p-10 border border-[#c9a84c]/20 shadow-2xl overflow-hidden flex flex-col md:flex-row justify-between items-center gap-6 z-10">
         <div className="absolute right-0 top-0 w-64 h-64 bg-[#c9a84c]/5 rounded-full filter blur-3xl pointer-events-none" />
         
         <div className="flex items-start gap-4">
