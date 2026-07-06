@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-// PERBAIKAN: Dikembalikan ke '../../' karena jaraknya hanya 2 tingkat dari src
-import axios from "../../api/axios"; 
+import axios from "../../api/axios";
 import { Sparkles, User, Phone, MapPin, Save, Camera } from "lucide-react";
+
+// Sesuaikan dengan base URL backend Laravel kamu (tanpa /api di akhir)
+const BACKEND_URL = "http://localhost:8000";
 
 export default function ProfilCustomer() {
   const [profile, setProfile] = useState({
@@ -10,32 +12,35 @@ export default function ProfilCustomer() {
     phone: "",
     address: ""
   });
-  const [avatar, setAvatar] = useState(null); 
-  const [avatarPreview, setAvatarPreview] = useState("https://i.pravatar.cc/150?img=33"); 
+  const [avatar, setAvatar] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState("https://i.pravatar.cc/150?img=33");
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const token = localStorage.getItem("token"); 
-        
-        // Method GET ini berhasil ke "/user"
-        const response = await axios.get("/user", {
+        const token = localStorage.getItem("token");
+
+        // FIX: endpoint yang benar adalah /auth/user (sesuai routes/api.php)
+        const response = await axios.get("/auth/user", {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
 
+        const userData = response.data;
+
         setProfile({
-          name: response.data.name || "",
-          email: response.data.email || "",
-          phone: response.data.phone || "",
-          address: response.data.address || ""
+          name: userData.name || "",
+          email: userData.email || "",
+          phone: userData.phone || "",
+          address: userData.address || ""
         });
 
-        if (response.data.avatar) {
-          setAvatarPreview(response.data.avatar);
+        if (userData.avatar) {
+          setAvatarPreview(`${BACKEND_URL}/storage/${userData.avatar}`);
         }
       } catch (error) {
         console.error("Gagal memuat data profil dari database:", error);
@@ -60,38 +65,55 @@ export default function ProfilCustomer() {
   };
 
   const handleSave = async () => {
+    setSaving(true);
     try {
       const token = localStorage.getItem("token");
-      
+
       const formData = new FormData();
       formData.append("name", profile.name);
       formData.append("phone", profile.phone || "");
       formData.append("address", profile.address || "");
-      
-      // Method Spoofing untuk Laravel
-      formData.append("_method", "PUT"); 
-      
+
       if (avatar) {
         formData.append("avatar", avatar);
       }
 
-      // Endpoint disamakan dengan GET yaitu ke "/user"
-      await axios.post("/user", formData, {
+      // FIX: endpoint yang benar adalah /auth/user/profile, method POST asli (bukan spoofing PUT)
+      const res = await axios.post("/auth/user/profile", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data" 
+          "Content-Type": "multipart/form-data"
         }
       });
 
-      localStorage.setItem("customerProfile", JSON.stringify(profile));
+      const updatedUser = res.data.user;
+
+      setProfile({
+        name: updatedUser.name || "",
+        email: updatedUser.email || "",
+        phone: updatedUser.phone || "",
+        address: updatedUser.address || ""
+      });
+
+      if (updatedUser.avatar) {
+        setAvatarPreview(`${BACKEND_URL}/storage/${updatedUser.avatar}`);
+      }
+
+      localStorage.setItem("customerProfile", JSON.stringify(updatedUser));
+      setAvatar(null);
       alert("Profil dan Foto Berhasil Diperbarui!");
     } catch (error) {
       console.error("Gagal memperbarui profil:", error);
       if (error.response?.data?.message) {
         alert(`Gagal menyimpan: ${error.response.data.message}`);
+      } else if (error.response?.data?.errors) {
+        const firstError = Object.values(error.response.data.errors)[0][0];
+        alert(`Gagal menyimpan: ${firstError}`);
       } else {
         alert("Terjadi kesalahan saat menyimpan perubahan ke server.");
       }
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -106,30 +128,30 @@ export default function ProfilCustomer() {
   return (
     <div className="max-w-2xl mx-auto rounded-2xl bg-[#1a1610] border border-[#c9a84c]/20 shadow-[0_12px_40px_rgba(0,0,0,0.5)] text-white overflow-hidden">
       <div className="h-1.5 bg-gradient-to-r from-[#c9a84c] via-[#e8c97a] to-[#c9a84c]" />
-      
+
       <div className="p-6 md:p-8 space-y-6">
         <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-[#c9a84c]/10">
-          
-          <div 
-            className="avatar group relative cursor-pointer" 
+
+          <div
+            className="avatar group relative cursor-pointer"
             onClick={() => fileInputRef.current.click()}
             title="Klik untuk ubah foto profil"
           >
             <div className="w-24 h-24 rounded-full ring-2 ring-[#c9a84c] ring-offset-4 ring-offset-[#1a1610] shadow-xl overflow-hidden relative">
               <img src={avatarPreview} alt="Premium Client Avatar" className="object-cover w-full h-full" />
-              
+
               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-1">
                 <Camera size={18} className="text-[#c9a84c]" />
                 <span className="text-[10px] text-white/80 font-medium">Ubah Foto</span>
               </div>
             </div>
 
-            <input 
-              type="file" 
+            <input
+              type="file"
               ref={fileInputRef}
               onChange={handleAvatarChange}
               accept="image/*"
-              className="hidden" 
+              className="hidden"
             />
           </div>
 
@@ -184,12 +206,13 @@ export default function ProfilCustomer() {
             />
           </div>
 
-          <button 
-            onClick={handleSave} 
-            className="w-full mt-4 h-12 bg-gradient-to-r from-[#c9a84c] to-[#e8c97a] hover:from-[#e8c97a] hover:to-[#c9a84c] text-[#0d0b08] font-extrabold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 uppercase text-xs tracking-wider shadow-lg shadow-[#c9a84c]/10"
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="w-full mt-4 h-12 bg-gradient-to-r from-[#c9a84c] to-[#e8c97a] hover:from-[#e8c97a] hover:to-[#c9a84c] text-[#0d0b08] font-extrabold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 uppercase text-xs tracking-wider shadow-lg shadow-[#c9a84c]/10 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save size={15} />
-            Simpan Perubahan
+            {saving ? "Menyimpan..." : "Simpan Perubahan"}
           </button>
         </div>
       </div>
