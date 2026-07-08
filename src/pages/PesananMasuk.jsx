@@ -46,12 +46,7 @@ export default function PesananMasuk() {
 
   return (
     <div className="text-white min-h-screen bg-[#14151a]">
-      <PageHeader
-        title="Pesanan Masuk"
-        breadcrumb={[{ label: "Dashboard" }, { label: "Pesanan Masuk" }]}
-        buttonLabel="+ Tambah Pesanan"
-        buttonStyle="orange"
-      />
+      
 
       <div className="p-6 md:p-8">
         {/* --- 4 Kartu Ringkasan Atas (Dinamis) --- */}
