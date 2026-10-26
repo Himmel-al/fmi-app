@@ -40,7 +40,7 @@
     Habis:          { bg: C.redDim,    text: C.red    },
   };
 
-  const fmt = (p) => p >= 1e6 ? `Rp ${(p/1e6).toFixed(1)}M` : `Rp ${(p/1e3).toFixed(0)}K`;
+  const fmt = (p) => `Rp ${Number(p).toLocaleString("id-ID")}`;
 
   /* SVG ikon fallback jika gambar default.png atau kosong */
   const Icon = ({ cat, size = 52 }) => {

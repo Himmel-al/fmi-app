@@ -430,7 +430,7 @@ describe("Pengujian Sistem SIPP - F01 sampai F14", () => {
     });
 
     cy.contains("Keranjang Anda Kosong").should("be.visible");
-    cy.contains("Mulai Menjelajahi Katalog").should("be.visible");
+    cy.contains("Mulai Menjelajah Katalog").should("be.visible");
   });
 
   it("TC-20 - Kuantitas item keranjang dapat bertambah dan berkurang", () => {
